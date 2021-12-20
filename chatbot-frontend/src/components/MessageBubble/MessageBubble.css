@@ -1,0 +1,18 @@
+.messagebubble-rootContainer {
+  padding: 0.2em;
+  margin: 0.4em;
+  border-radius: 4px;
+  box-shadow: 1px 1px 6px 2px rgba(184, 184, 184, 0.349);
+  max-width: 20em;
+  word-wrap: break-word;
+  text-align: left;
+}
+.messagebubble-right {
+  align-self: flex-end;
+  background-color: #5399e1;
+  color: white;
+}
+.messagebubble-left {
+  align-self: flex-start;
+  background-color: #f4f8fb;
+}

@@ -1,0 +1,26 @@
+.navbar-rootContainer {
+  background-color: #6da9c0;
+  width: 100%;
+  flex-basis: 20%;
+  padding: 0.1em 0.2em;
+}
+.navbar-headerContainer {
+  display: flex;
+  padding: 0.7em;
+}
+
+.navbar-logo {
+  width: 30%;
+}
+.navbar-headerTextContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  color: white;
+}
+.navbar-headerText1 {
+  font-size: 1.2em;
+}
+.navbar-headerText2 {
+  font-size: 0.9em;
+}
