@@ -23,7 +23,7 @@ const AdminNavbar = () => {
               Home
             </Link>
             <button
-              class="btn btn-secondary"
+              className="btn btn-secondary"
               type="submit"
               onClick={() => dispatch(logoutAdmin())}
             >

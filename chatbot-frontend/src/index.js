@@ -7,6 +7,8 @@ import { Provider } from "react-redux";
 import { store } from "./store";
 import { BrowserRouter } from "react-router-dom";
 
+// "react-scripts": "4.0.3",(old)
+
 ReactDOM.render(
   <React.StrictMode>
     <BrowserRouter>

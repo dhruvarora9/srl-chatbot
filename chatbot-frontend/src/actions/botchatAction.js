@@ -4,7 +4,7 @@ import {
   SEND_BOT_MESSAGE_SUCCESS,
 } from "../action-types/actionTypes";
 import API from "../shared/API_EXPLICIT";
-import uniqueId from "lodash.uniqueid";
+import { v4 as uuidv4 } from "uuid";
 
 export const Get_Bot_Message = (query, messagesList) => (dispatch) => {
   dispatch({
@@ -16,9 +16,9 @@ export const Get_Bot_Message = (query, messagesList) => (dispatch) => {
       if (res.data.status === 1) {
         newMessgesList = [
           ...messagesList,
-          { id: uniqueId(), message: query, type: "user" },
+          { id: uuidv4(), message: query, type: "user" },
           {
-            id: uniqueId(),
+            id: uuidv4(),
             message: res.data.responseData,
             type: "bot",
           },
@@ -33,12 +33,12 @@ export const Get_Bot_Message = (query, messagesList) => (dispatch) => {
       newMessgesList = [
         ...messagesList,
         {
-          id: uniqueId(),
+          id: uuidv4(),
           message: query,
           type: "user",
         },
         {
-          id: uniqueId(),
+          id: uuidv4(),
           message: "No results found. Please try again with another keyword!",
           type: "bot",
         },

@@ -1,38 +1,36 @@
-import uniqueId from "lodash.uniqueid";
-import { useNavigate } from "react-router-dom";
+import { signInWithEmailAndPassword } from "firebase/auth";
+
 import {
   LOGIN_ADMIN,
   LOGIN_ADMIN_FAILED,
   LOGIN_ADMIN_SUCCESS,
   LOGOUT_ADMIN,
 } from "../action-types/actionTypes";
-import API from "../shared/API_EXPLICIT";
+import { auth } from "../firebase/app";
+// import API from "../shared/API_EXPLICIT";
 
 export const adminLogin = (email, password, navigate) => (dispatch) => {
   dispatch({
     type: LOGIN_ADMIN,
   });
-  API.post("/admin/login", {
-    email: email,
-    password: password,
-  })
-    .then((res) => {
-      localStorage.setItem("email", res.data.admin.email);
-      localStorage.setItem("username", res.data.admin.username);
-      localStorage.setItem("token", res.data.token);
+
+  signInWithEmailAndPassword(auth, email, password)
+    .then((userCredentials) => {
+      localStorage.setItem("token", userCredentials.user.accessToken);
+      localStorage.setItem("email", userCredentials.user.email);
+      localStorage.setItem("username", "Admin");
       dispatch({
         type: LOGIN_ADMIN_SUCCESS,
-        email: res.data.admin.email,
-        username: res.data.admin.username,
-        token: res.data.token,
+        email: userCredentials.user.email,
+        token: userCredentials.user.email,
+        username: "Admin",
       });
-      navigate("/dashboard", { replace: true });
     })
     .catch((error) => {
-      console.log(error);
+      console.log("error code", error.code, "Error Message: ", error.message);
       dispatch({
         type: LOGIN_ADMIN_FAILED,
-        payload: error,
+        payload: error.message,
       });
     });
 };
