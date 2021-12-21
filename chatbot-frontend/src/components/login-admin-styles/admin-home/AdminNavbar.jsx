@@ -14,17 +14,16 @@ const AdminNavbar = () => {
         style={{ backgroundColor: "#337ab7" }}
       >
         <div className="container-fluid">
-          <a className="navbar-brand" href="/home" style={{ color: "white" }}>
+          <a className="navbar-brand" href="/" style={{ color: "white" }}>
             Admin-Chatbot
           </a>
 
-          <form class="d-flex gap-2">
-            <Link role="button" className="btn btn-secondary" to="/">
+          <form className="flex py-1">
+            <Link role="button" className="btn btn-secondary mx-1" to="/">
               Home
             </Link>
             <button
-              className="btn btn-secondary"
-              type="submit"
+              className="btn btn-secondary mx-1"
               onClick={() => dispatch(logoutAdmin())}
             >
               Logout

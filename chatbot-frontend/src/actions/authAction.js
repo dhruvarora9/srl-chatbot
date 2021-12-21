@@ -49,6 +49,15 @@ export const checkLoginStatus = () => (dispatch) => {
   }
 };
 
+export const setLoginStatus = (email, token, username) => (dispatch) => {
+  dispatch({
+    type: LOGIN_ADMIN_SUCCESS,
+    email,
+    username,
+    token,
+  });
+};
+
 export const logoutAdmin = () => (dispatch) => {
   localStorage.removeItem("email");
   localStorage.removeItem("token");

@@ -10,7 +10,6 @@ import AdminResponse from "./AdminResponse";
 
 const AdminHome = (props) => {
   const { editModal, setEditModal } = props;
-  console.log("editModal home", editModal);
   const dispatch = useDispatch();
   const unansweredQuesList = useSelector((store) => store.quesData.quesList);
 
@@ -35,7 +34,6 @@ const AdminHome = (props) => {
 
   useEffect(() => {
     setTotalData(unansweredQuesList.length);
-    console.log("activepage", activePage);
   }, [activePage]);
 
   return (
@@ -93,7 +91,6 @@ const AdminHome = (props) => {
           id={responseModalData}
         />
       )}
-      {console.log("editModal after click", editModal)}
       {totalData > itemsCountPerPage ? (
         <Pagination
           activePage={activePage}
