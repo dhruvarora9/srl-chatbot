@@ -15,7 +15,7 @@ export default function BotChat() {
               key={mesg.id}
               id={mesg.id}
               content={mesg.message}
-              type={mesg.type}
+              sender={mesg.sender}
             />
           );
         })}

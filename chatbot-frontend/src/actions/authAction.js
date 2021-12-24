@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 import {
   LOGIN_ADMIN,
@@ -27,10 +27,12 @@ export const adminLogin = (email, password, navigate) => (dispatch) => {
       });
     })
     .catch((error) => {
-      console.log("error code", error.code, "Error Message: ", error.message);
+      let errorMessage =
+        "Error: " + error.message.match(/\(([^)]+)\)/)[1].split("/")[1];
+
       dispatch({
         type: LOGIN_ADMIN_FAILED,
-        payload: error.message,
+        payload: errorMessage,
       });
     });
 };
@@ -62,7 +64,11 @@ export const logoutAdmin = () => (dispatch) => {
   localStorage.removeItem("email");
   localStorage.removeItem("token");
   localStorage.removeItem("username");
-  dispatch({
-    type: LOGOUT_ADMIN,
-  });
+  signOut(auth)
+    .then(() => {
+      dispatch({
+        type: LOGOUT_ADMIN,
+      });
+    })
+    .catch((error) => console.log(error));
 };

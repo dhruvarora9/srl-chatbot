@@ -10,8 +10,7 @@ import { toast } from "react-toastify";
 import "../login/login.styles.css";
 import "../styles.css";
 import { adminLogin } from "../../../actions/authAction";
-import { useNavigate } from "react-router-dom";
-// import { logIn } from "../../../actions/signup.action";
+import { Link, useNavigate } from "react-router-dom";
 
 const initialValues = {
   email: "",
@@ -21,7 +20,7 @@ const initialValues = {
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  //   const history = useHistory();
+  const authError = useSelector((store) => store.auth.error);
 
   const validateRequestCallBack = Yup.object().shape({
     email: Yup.string()
@@ -36,21 +35,20 @@ const Login = () => {
       email: values.email,
       password: values.password,
     };
-    console.log("postdata", postdata);
     dispatch(adminLogin(postdata.email, postdata.password, navigate));
-
     actions.setSubmitting(false);
   };
 
-  //   const handleEmailChange = (e, setFieldValue) => {
-  //     e.preventDefault();
-  //     let { value, name } = e.target;
-  //     setFieldValue(name, value);
-  //   };
-
   return (
-    <div className="w-full h-screen pt-48 bg-gray-100">
-      <div className="w-4/5 shadow-lg px-4 py-5 rounded-md mx-auto bg-white">
+    <div className="w-full h-screen bg-gray-100 py-4 flex flex-col">
+      <Link
+        role={"button"}
+        to="/"
+        className="bg-blue-400  hover:bg-blue-500  ml-auto mr-4 text-white font-bold py-2 px-4 rounded"
+      >
+        Back to Home
+      </Link>
+      <div className="w-4/5 shadow-lg mt-40 px-4 py-5 rounded-md mx-auto bg-white">
         <span className="text-xl font-semibold ">Log into your Account</span>
         <Formik
           initialValues={initialValues}
@@ -93,19 +91,17 @@ const Login = () => {
                     <p className="error no-pos"> {errors.password}</p>
                   ) : null}
                 </Form.Group>
-                {errors.message ? (
-                  <Row>
-                    <Col xs={12} sm={12} md={12}>
-                      <span className="errorMsg">{errors.message}</span>
-                    </Col>
-                  </Row>
-                ) : null}
-                <button
-                  className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-                  type="submit"
-                >
-                  Log In
-                </button>
+                <div className="flex flex-col">
+                  {authError ? (
+                    <span className="text-red-600 pb-2">{authError}</span>
+                  ) : null}
+                  <button
+                    className="bg-blue-500 self-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  w-1/6"
+                    type="submit"
+                  >
+                    Log In
+                  </button>
+                </div>
               </FormikForm>
             );
           }}
