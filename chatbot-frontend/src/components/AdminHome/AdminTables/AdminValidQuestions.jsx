@@ -1,24 +1,25 @@
 import React, { useState, useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { Button, Table } from "react-bootstrap";
+import { Table, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Pagination from "react-js-pagination";
-import "../admin-home/adminhome.styles.css";
-import AdminNavbar from "../../AdminHome/AdminNavbar";
-import AdminResponse from "../../AdminHome/AdminResponse";
+import "../adminhome.styles.css";
+import AdminResponse from "../AdminResponse";
+import { useDispatch, useSelector } from "react-redux";
+import { getValidQuestionList } from "../../../actions/adminAction";
 
-const AdminHome = (props) => {
+const AdminValidQuestion = (props) => {
   const { editModal, setEditModal } = props;
-  const dispatch = useDispatch();
-  const unansweredQuesList = useSelector((store) => store.quesData.quesList);
 
-  const [itemsCountPerPage, setItemsCountPerPage] = useState(5);
-  const [activePage, setActivePage] = useState(1);
-  const [pageRangeDisplayed, setPageRangeDisplayed] = useState(5);
-  const [totalData, setTotalData] = useState(0);
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [responseModalData, setResponseModalData] = useState("");
-
+  const { loading: adminLoading, validQuestionList } = useSelector(
+    (store) => store.admin
+  );
+  const dispatch = useDispatch();
+  const [itemsCountPerPage] = useState(5);
+  const [activePage, setActivePage] = useState(1);
+  const [pageRangeDisplayed] = useState(5);
+  const [totalData, setTotalData] = useState(0);
   const lastData = activePage * itemsCountPerPage;
   const firstData = lastData - itemsCountPerPage;
 
@@ -32,31 +33,32 @@ const AdminHome = (props) => {
   };
 
   useEffect(() => {
-    setTotalData(unansweredQuesList.length);
-  }, [activePage]);
+    setTotalData(validQuestionList.length);
+  }, [validQuestionList]);
+
+  useEffect(() => {
+    dispatch(getValidQuestionList());
+  }, []);
 
   return (
-    <div className="main-container">
-      <AdminNavbar />
+    <div>
       <div className="box-container">
         <Table striped bordered hover>
           <thead>
             <tr>
-              <th>Id</th>
               <th>Questiens</th>
               <th colSpan={2}>Actions</th>
             </tr>
           </thead>
           <tbody>
-            {unansweredQuesList &&
-              unansweredQuesList.length > 0 &&
-              unansweredQuesList
+            {validQuestionList &&
+              validQuestionList.length > 0 &&
+              validQuestionList
                 .slice(firstData, lastData)
                 .map((data, index) => {
                   return (
                     <tr key={index}>
-                      <td>{data.id}</td>
-                      <td>{data.text}</td>
+                      <td>{data.query}</td>
                       <td>
                         {/* <Link
                         className="btn btn-primary "
@@ -74,7 +76,7 @@ const AdminHome = (props) => {
                       </td>
                       <td>
                         <Button variant="outline-danger" onClick={handleDelete}>
-                          Delete Question
+                          Invalid Question
                         </Button>
                       </td>
                     </tr>
@@ -104,8 +106,4 @@ const AdminHome = (props) => {
     </div>
   );
 };
-export default AdminHome;
-
-/**
- * itemClass="page-item" linkClass="page-link"
- */
+export default AdminValidQuestion;

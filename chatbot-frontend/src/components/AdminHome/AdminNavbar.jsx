@@ -1,9 +1,9 @@
 import React from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
-import { logoutAdmin } from "../../../actions/authAction";
+import { logoutAdmin } from "../../actions/authAction";
 
-import "../admin-home/adminhome.styles.css";
+import "./adminhome.styles.css";
 
 const AdminNavbar = () => {
   const dispatch = useDispatch();

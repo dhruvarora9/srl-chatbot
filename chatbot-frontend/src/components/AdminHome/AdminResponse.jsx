@@ -4,9 +4,6 @@ import { Row, Col, Button, Form, Modal, FloatingLabel } from "react-bootstrap";
 import * as Yup from "yup";
 import { useSelector } from "react-redux";
 
-import "../styles.css";
-import "../admin-home/AdminModal.styles.css";
-
 const initialValues = {
   text: "",
   response: "",

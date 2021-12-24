@@ -78,6 +78,10 @@ export const Get_Bot_Message = (ques, messagesList) => (dispatch) => {
             },
             {
               id: uuidv4(),
+              message: "Here are a few suggestions",
+            },
+            {
+              id: uuidv4(),
               message: messageArray,
             },
           ];
