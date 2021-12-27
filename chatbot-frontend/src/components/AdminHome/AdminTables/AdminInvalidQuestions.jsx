@@ -28,7 +28,7 @@ const AdminInvalidQuestion = (props) => {
   const firstData = lastData - itemsCountPerPage;
 
   const handleDelete = () => {
-    toast.success("question has been deleted");
+    toast.success("question has been validated");
   };
 
   const showResponseModalHandler = (id) => {
@@ -63,17 +63,10 @@ const AdminInvalidQuestion = (props) => {
                   return (
                     <tr key={index}>
                       <td>{data.query}</td>
-                      <td>
-                        <Button
-                          variant="outline-primary"
-                          onClick={() => showResponseModalHandler(data.id)}
-                        >
-                          Add Response
-                        </Button>
-                      </td>
+
                       <td>
                         <Button variant="outline-danger" onClick={handleDelete}>
-                          Delete Question
+                          Validate
                         </Button>
                       </td>
                     </tr>

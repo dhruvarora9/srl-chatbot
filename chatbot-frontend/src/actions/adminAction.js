@@ -4,6 +4,7 @@ import {
   GET_ADMIN_VALID_QUESTIONS,
 } from "../action-types/actionTypes";
 import { db } from "../firebase/app";
+import { v4 as uuidv4 } from "uuid";
 
 export const getValidQuestionList = () => (dispatch) => {
   const usersCollectionRef = collection(db, "botchat");
@@ -16,7 +17,7 @@ export const getValidQuestionList = () => (dispatch) => {
     let arr = [];
     const querySnapshot = await getDocs(filteredData);
     querySnapshot.forEach((doc) => {
-      arr.push(doc.data());
+      arr.push({ ...doc.data(), firebase_id: doc.id, id: uuidv4() });
     });
     dispatch({
       type: GET_ADMIN_VALID_QUESTIONS,
@@ -37,7 +38,7 @@ export const getInvalidQuestionList = () => (dispatch) => {
     let arr = [];
     const querySnapshot = await getDocs(filteredData);
     querySnapshot.forEach((doc) => {
-      arr.push(doc.data());
+      arr.push({ ...doc.data(), firebase_id: doc.id, id: uuidv4() });
     });
     dispatch({
       type: GET_ADMIN_INVALID_QUESTIONS,

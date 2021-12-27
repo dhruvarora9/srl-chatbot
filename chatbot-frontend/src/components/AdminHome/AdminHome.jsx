@@ -17,7 +17,7 @@ const AdminHome = (props) => {
           onClick={() => setCurrentPage("valid")}
           className="h-10 px-5 m-2 text-indigo-100 font-semibold transition-colors duration-150 bg-indigo-400 rounded-lg focus:shadow-outline hover:bg-indigo-500"
         >
-          Valid Question List
+          Requested Question List
         </button>
         <button
           style={

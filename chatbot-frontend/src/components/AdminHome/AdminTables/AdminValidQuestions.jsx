@@ -24,7 +24,7 @@ const AdminValidQuestion = (props) => {
   const firstData = lastData - itemsCountPerPage;
 
   const handleDelete = () => {
-    toast.success("question has been deleted");
+    toast.success("question has been invalidated");
   };
 
   const showResponseModalHandler = (id) => {
@@ -76,7 +76,7 @@ const AdminValidQuestion = (props) => {
                       </td>
                       <td>
                         <Button variant="outline-danger" onClick={handleDelete}>
-                          Invalid Question
+                          Invalidate
                         </Button>
                       </td>
                     </tr>
