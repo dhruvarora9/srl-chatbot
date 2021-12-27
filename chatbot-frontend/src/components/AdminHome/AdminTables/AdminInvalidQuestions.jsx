@@ -8,7 +8,7 @@ import { db } from "../../../firebase/app";
 import "../adminhome.styles.css";
 import AdminResponse from "../AdminResponse";
 import { useDispatch, useSelector } from "react-redux";
-import { getInvalidQuestionList } from "../../../actions/adminAction";
+import { getInvalidQuestionList, editInvalidQuestion } from "../../../actions/adminAction";
 
 const AdminInvalidQuestion = (props) => {
   const { editModal, setEditModal } = props;
@@ -27,8 +27,10 @@ const AdminInvalidQuestion = (props) => {
   const lastData = activePage * itemsCountPerPage;
   const firstData = lastData - itemsCountPerPage;
 
-  const handleDelete = () => {
+  const handleValidate = (id) => {
+    dispatch(editInvalidQuestion(id));
     toast.success("question has been validated");
+
   };
 
   const showResponseModalHandler = (id) => {
@@ -65,7 +67,7 @@ const AdminInvalidQuestion = (props) => {
                       <td>{data.query}</td>
 
                       <td>
-                        <Button variant="outline-danger" onClick={handleDelete}>
+                        <Button variant="outline-danger" onClick={() => handleValidate(data.firebase_id)}>
                           Validate
                         </Button>
                       </td>
