@@ -8,9 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import {
   collection,
   getDocs,
-  collectionGroup,
   getDoc,
-  getFirestore,
   doc,
   query,
   where,
@@ -65,7 +63,8 @@ export const Get_Bot_Message = (ques, messagesList) => (dispatch) => {
           //Result is an array (for multiple response)
           querySnapshotItem.data().response.forEach((respItem) => {
             messageArray.push({
-              id: respItem.reference.id,
+              id: uuidv4(),
+              firebase_id: respItem.reference.id,
               message: respItem.query,
             });
           });
@@ -97,7 +96,8 @@ export const Get_Bot_Message = (ques, messagesList) => (dispatch) => {
                 sender: "user",
               },
               {
-                id: querySnapshotItem.id,
+                id: uuidv4(),
+                firebase_id: querySnapshotItem.id,
                 message: querySnapshotItem.data().response,
               },
             ];

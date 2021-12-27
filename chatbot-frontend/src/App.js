@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import { checkLoginStatus, setLoginStatus } from "./actions/authAction";
@@ -10,6 +10,7 @@ import { auth } from "./firebase/app";
 
 function App() {
   const dispatch = useDispatch();
+  const [loading, setLoading] = useState(true);
   // useEffect(() => {
   //   dispatch(checkLoginStatus());
   // });
@@ -20,12 +21,18 @@ function App() {
       } else {
         dispatch(setLoginStatus(null, null, null));
       }
+      setLoading(false);
     });
   }, []);
   return (
     <div className="App">
-      <RouteMain />
-      <ToastContainer />
+      {!loading && (
+        <div>
+          <RouteMain />
+          <ToastContainer />
+        </div>
+      )}
+      {loading && <p>Loading....</p>}
     </div>
   );
 }
