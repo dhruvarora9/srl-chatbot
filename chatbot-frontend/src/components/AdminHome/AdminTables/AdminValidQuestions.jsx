@@ -5,7 +5,11 @@ import Pagination from "react-js-pagination";
 import "../adminhome.styles.css";
 import AdminResponse from "../AdminResponse";
 import { useDispatch, useSelector } from "react-redux";
-import { getValidQuestionList, editValidQuestion } from "../../../actions/adminAction";
+import {
+  getValidQuestionList,
+  editValidQuestion,
+} from "../../../actions/adminAction";
+import AdminResponseModal from "../../AdminResponseModal/AdminResponseModal";
 
 const AdminValidQuestion = (props) => {
   const { editModal, setEditModal } = props;
@@ -23,7 +27,7 @@ const AdminValidQuestion = (props) => {
   const lastData = activePage * itemsCountPerPage;
   const firstData = lastData - itemsCountPerPage;
 
-  const handleInvalidate =  (id) => {
+  const handleInvalidate = (id) => {
     dispatch(editValidQuestion(id));
     toast.success("question has been invalidated");
   };
@@ -76,7 +80,10 @@ const AdminValidQuestion = (props) => {
                         </Button>
                       </td>
                       <td>
-                        <Button variant="outline-danger" onClick={() => handleInvalidate(data.firebase_id)}>
+                        <Button
+                          variant="outline-danger"
+                          onClick={() => handleInvalidate(data.firebase_id)}
+                        >
                           Invalidate
                         </Button>
                       </td>
@@ -87,9 +94,9 @@ const AdminValidQuestion = (props) => {
         </Table>
       </div>
       {showResponseModal && (
-        <AdminResponse
+        <AdminResponseModal
           show={showResponseModal}
-          onHide={setShowResponseModal}
+          onHide={() => setShowResponseModal(false)}
           id={responseModalData}
         />
       )}

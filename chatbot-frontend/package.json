@@ -10,6 +10,7 @@
     "axios": "^0.24.0",
     "firebase": "^9.6.1",
     "formik": "^2.2.9",
+    "multiselect-react-dropdown": "^2.0.17",
     "postcss": "^8.4.5",
     "postcss-cli": "^9.1.0",
     "query-string": "^7.0.1",
