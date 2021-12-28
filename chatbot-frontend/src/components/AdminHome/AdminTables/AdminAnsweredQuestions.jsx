@@ -32,7 +32,7 @@ function AdminAnsweredQuestions() {
           <thead>
             <tr>
               <th>Questiens</th>
-              <th colSpan={4}>Responses</th>
+              <th colSpan={4}>Response List</th>
             </tr>
           </thead>
           <tbody>
