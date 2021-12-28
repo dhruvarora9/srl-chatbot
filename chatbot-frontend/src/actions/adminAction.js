@@ -4,7 +4,7 @@ import {
   GET_ADMIN_VALID_QUESTIONS,
   EDIT_ADMIN_VALID_QUESTIONS,
   EDIT_ADMIN_INVALID_QUESTIONS,
-
+  GET_ADMIN_ANSWERED_QUESTIONS
 } from "../action-types/actionTypes";
 import { db } from "../firebase/app";
 import { v4 as uuidv4 } from "uuid";
@@ -100,3 +100,24 @@ export const editInvalidQuestion =  (quesid) => (dispatch) => {
   };
   getEditQuestion();  
 };
+
+export const getAnsweredQuestionList = () => (dispatch) => {
+  const usersCollectionRef = collection(db, "botchat");
+  const getUsers = async () => {
+    const filteredData = query(
+      usersCollectionRef,
+      where("type", "==", true),
+      where("valid", "==", true)
+    );
+    let arr = [];
+    const querySnapshot = await getDocs(filteredData);
+    querySnapshot.forEach((doc) => {
+      arr.push({ ...doc.data(), firebase_id: doc.id, id: uuidv4() });
+    });
+    dispatch({
+      type:  GET_ADMIN_ANSWERED_QUESTIONS,
+      payload: arr,
+    });
+  };
+  getUsers();
+}
