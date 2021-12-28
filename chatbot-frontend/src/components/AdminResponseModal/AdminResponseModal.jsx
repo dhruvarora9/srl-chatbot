@@ -1,11 +1,17 @@
 import React from "react";
-import { Formik, Field, Form, ErrorMessage } from "formik";
+import { Formik, Field, Form, ErrorMessage, useFormikContext } from "formik";
 import * as Yup from "yup";
 import { useState } from "react";
 import { Multiselect } from "multiselect-react-dropdown";
 
-export default function AdminResponseModal({ show, id, onHide }) {
-  const [responseType, setResponseType] = useState("single");
+import { collection, query, where, getDocs } from "firebase/firestore";
+import { useEffect } from "react";
+import { db } from "../../firebase/app";
+import ResponseMultiselectDropdown from "./ResponseMultiselectDropdown";
+
+export default function AdminResponseModal({ show, data, onHide }) {
+  const [multiOptionData, setMultiOptionData] = useState([]);
+
   const validateRequestCallBack = Yup.object().shape({
     text: Yup.string().trim().required("Please enter valid Question"),
     response: Yup.string().trim().required("Please enter a valid Response"),
@@ -25,8 +31,17 @@ export default function AdminResponseModal({ show, id, onHide }) {
         onClick={onHide}
         className="absolute inset-0 h-full w-full bg opacity-70 bg-slate-700"
       ></div>
-      <div className="mx-auto p-6  flex flex-col bg-white opacity-100 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-        <span className="text-xl font-bold">Add a Response</span>
+      <div className="mx-auto p-6 w-3/5 flex flex-col bg-white opacity-100 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+        <div className="flex justify-between">
+          <span className="text-xl font-bold">Add a Response</span>
+          <button
+            onClick={onHide}
+            className="rounded-full bg-red-700 text-white  px-2"
+          >
+            X
+          </button>
+        </div>
+
         <div className="flex-col">
           <Formik
             initialValues={{
@@ -38,32 +53,56 @@ export default function AdminResponseModal({ show, id, onHide }) {
             onSubmit={handleSubmitEvent}
           >
             {({ isSubmitting, values, errors, touched, setFieldValue }) => (
-              <Form>
+              <Form className="flex flex-col  p-5 mt-4 space-y-4 text-black bg-white rounded-lg  lg:p-10 lg:space-y-6">
                 <Field name="text">
                   {({ field }) => (
                     <div>
-                      <input type="text" {...field} placeholder="Query" />
-                    </div>
-                  )}
-                </Field>
-                {errors.text && touched.text ? <div>{errors.text}</div> : null}
-                <label>
-                  <Field type="checkbox" name="multiResponse" />
-                  Check for multi Response
-                </label>
-                <Field name="response">
-                  {({ field }) => (
-                    <div>
                       <input
+                        className="px-2 py-1 border-2 w-full"
                         type="text"
                         {...field}
-                        placeholder="Add your Response"
+                        placeholder="Query"
+                        value={data.query}
                       />
                     </div>
                   )}
                 </Field>
+                {errors.text && touched.text ? (
+                  <div className="text-red-600">{errors.text}</div>
+                ) : null}
+                <label className="w-4/6 mx-auto">
+                  <Field type="checkbox" name="multiResponse" className="" />{" "}
+                  Check for multi Response
+                </label>
+                {!values.multiResponse && (
+                  <>
+                    <Field name="response">
+                      {({ field }) => (
+                        <div className="mt-3">
+                          <textarea
+                            rows="6"
+                            className="resize-none w-full border-2 "
+                            {...field}
+                            placeholder="Add your Response"
+                          ></textarea>
+                        </div>
+                      )}
+                    </Field>
+                    {errors.response && touched.response ? (
+                      <div className="text-red-600">{errors.response}</div>
+                    ) : null}
+                  </>
+                )}
+                {values.multiResponse && (
+                  <ResponseMultiselectDropdown data={data} />
+                )}
 
-                <button type="submit">Submit</button>
+                <button
+                  type="submit"
+                  className="bg-blue-500 self-center hover:bg-blue-700 text-white font-bold py-2 px-4 rounded  "
+                >
+                  Submit
+                </button>
               </Form>
             )}
           </Formik>

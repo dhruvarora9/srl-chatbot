@@ -32,8 +32,11 @@ const AdminValidQuestion = (props) => {
     toast.success("question has been invalidated");
   };
 
-  const showResponseModalHandler = (id) => {
-    setResponseModalData(id);
+  const showResponseModalHandler = (id, query) => {
+    setResponseModalData({
+      id,
+      query,
+    });
     setShowResponseModal(true);
   };
 
@@ -74,7 +77,9 @@ const AdminValidQuestion = (props) => {
                       </Link> */}
                         <Button
                           variant="outline-primary"
-                          onClick={() => showResponseModalHandler(data.id)}
+                          onClick={() =>
+                            showResponseModalHandler(data.id, data.query)
+                          }
                         >
                           Add Response
                         </Button>
@@ -97,7 +102,7 @@ const AdminValidQuestion = (props) => {
         <AdminResponseModal
           show={showResponseModal}
           onHide={() => setShowResponseModal(false)}
-          id={responseModalData}
+          data={responseModalData}
         />
       )}
       {totalData > itemsCountPerPage ? (
