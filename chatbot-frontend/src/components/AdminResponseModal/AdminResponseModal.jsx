@@ -8,21 +8,45 @@ import { collection, query, where, getDocs } from "firebase/firestore";
 import { useEffect } from "react";
 import { db } from "../../firebase/app";
 import ResponseMultiselectDropdown from "./ResponseMultiselectDropdown";
+import { useDispatch } from "react-redux";
+import { submitResponseForValidQuestion } from "../../actions/adminAction";
 
 export default function AdminResponseModal({ show, data, onHide }) {
   const [multiOptionData, setMultiOptionData] = useState([]);
+  const dispatch = useDispatch();
 
   const validateRequestCallBack = Yup.object().shape({
     text: Yup.string().trim().required("Please enter valid Question"),
-    response: Yup.string().trim().required("Please enter a valid Response"),
+    response: Yup.string().when("multiResponse", {
+      is: false,
+      then: Yup.string().trim().required("Please enter a valid Response"),
+    }),
+    multiResponse: Yup.boolean(),
+    responseList: Yup.array().when("multiResponse", {
+      is: true,
+      then: Yup.array().min(2, "Select atleast two options"),
+    }),
   });
 
-  const handleSubmitEvent = ({ text, response, multiResponse }, actions) => {
+  const handleSubmitEvent = (
+    { text, response, multiResponse, responseList },
+    actions
+  ) => {
     let post_data = {
       text,
       response,
+      multiResponse,
+      responseList,
     };
     console.log(post_data);
+    dispatch(
+      submitResponseForValidQuestion(
+        data.firebase_id,
+        response,
+        responseList,
+        multiResponse
+      )
+    );
   };
 
   return (
@@ -46,8 +70,9 @@ export default function AdminResponseModal({ show, data, onHide }) {
           <Formik
             initialValues={{
               text: "query",
-              response: "response",
+              response: "",
               multiResponse: false,
+              responseList: [],
             }}
             validationSchema={validateRequestCallBack}
             onSubmit={handleSubmitEvent}
@@ -94,7 +119,10 @@ export default function AdminResponseModal({ show, data, onHide }) {
                   </>
                 )}
                 {values.multiResponse && (
-                  <ResponseMultiselectDropdown data={data} />
+                  <ResponseMultiselectDropdown
+                    data={data}
+                    name="responseList"
+                  />
                 )}
 
                 <button

@@ -32,10 +32,11 @@ const AdminValidQuestion = (props) => {
     toast.success("question has been invalidated");
   };
 
-  const showResponseModalHandler = (id, query) => {
+  const showResponseModalHandler = (id, query, firebase_id) => {
     setResponseModalData({
       id,
       query,
+      firebase_id,
     });
     setShowResponseModal(true);
   };
@@ -78,7 +79,11 @@ const AdminValidQuestion = (props) => {
                         <Button
                           variant="outline-primary"
                           onClick={() =>
-                            showResponseModalHandler(data.id, data.query)
+                            showResponseModalHandler(
+                              data.id,
+                              data.query,
+                              data.firebase_id
+                            )
                           }
                         >
                           Add Response
