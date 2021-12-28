@@ -32,8 +32,7 @@ function AdminAnsweredQuestions() {
           <thead>
             <tr>
               <th>Questiens</th>
-              <th>First Response</th>
-              <th>Second Response</th>
+              <th colSpan={4}>Response List</th>
             </tr>
           </thead>
           <tbody>
@@ -53,7 +52,9 @@ function AdminAnsweredQuestions() {
                           );
                         })
                      } 
-                      {data.response.length > 2 && <td>{data.response}</td>}
+                     {typeof data.response === "string" && (
+                        <td>{data.response}</td>
+                      )}
                     </tr>
                   );
                 })}
