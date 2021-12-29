@@ -18,7 +18,7 @@ import { db } from "../firebase/app";
 import { toLowerCaseConverter } from "../shared/Helper";
 
 export const Get_Bot_Message =
-  (ques, messagesList, messageId) => (dispatch) => {
+  (divRef, ques, messagesList, messageId) => (dispatch) => {
     dispatch({
       type: SEND_BOT_MESSAGE,
     });
@@ -66,6 +66,7 @@ export const Get_Bot_Message =
               payload: newMessageList,
               error: "error",
             });
+            divRef.current.scrollIntoView({ behavior: "smooth" });
           })
           .catch((error) => console.log(error));
       } else {
@@ -137,6 +138,7 @@ export const Get_Bot_Message =
           type: SEND_BOT_MESSAGE_SUCCESS,
           payload: newMessageList,
         });
+        divRef.current.scrollIntoView({ behavior: "smooth" });
       }
     });
   };

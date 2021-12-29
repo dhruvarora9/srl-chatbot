@@ -1,16 +1,18 @@
 import React, { useState } from "react";
+
 import { Button } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useDispatch } from "react-redux";
 import { Get_Bot_Message } from "../../actions/botchatAction";
 import "./BotChatInput.css";
 
-export default function BotChatInput() {
+export default function BotChatInput({ divRef }) {
   const [message, setmessage] = useState("");
+
   const botMessageList = useSelector((store) => store.botmessage.messages);
   const dispatch = useDispatch();
   const sendBotMessageHandler = () => {
-    dispatch(Get_Bot_Message(message, botMessageList));
+    dispatch(Get_Bot_Message(divRef, message, botMessageList));
     setmessage("");
   };
   return (

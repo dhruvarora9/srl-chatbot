@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Get_Bot_Message } from "../../actions/botchatAction";
 import BotChatInput from "../BotChatInput/BotChatInput";
@@ -8,9 +8,10 @@ import "./BotChat.css";
 export default function BotChat() {
   const messages = useSelector((store) => store.botmessage.messages);
   const dispatch = useDispatch();
+  const divRef = useRef(null);
 
   const optionClickHandler = (id, ques, messId) => {
-    dispatch(Get_Bot_Message(ques, messages, messId));
+    dispatch(Get_Bot_Message(divRef, ques, messages, messId));
   };
 
   return (
@@ -58,8 +59,9 @@ export default function BotChat() {
             </MessageBubble>
           );
         })}
+        <div className="h-10 my-3" ref={divRef}></div>
       </div>
-      <BotChatInput />
+      <BotChatInput divRef={divRef} />
     </div>
   );
 }
