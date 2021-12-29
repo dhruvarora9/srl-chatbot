@@ -4,6 +4,7 @@ import Pagination from "react-js-pagination";
 import "../adminhome.styles.css";
 import { useDispatch, useSelector } from "react-redux";
 import { getAnsweredQuestionList } from "../../../actions/adminAction";
+import AdminViewModal from "../AdminViewModal/AdminViewModal";
 
 function AdminAnsweredQuestions() {
   const { loading: adminLoading, answeredQuestionList } = useSelector(
@@ -16,6 +17,18 @@ function AdminAnsweredQuestions() {
   const [totalData, setTotalData] = useState(0);
   const lastData = activePage * itemsCountPerPage;
   const firstData = lastData - itemsCountPerPage;
+
+  const [showViewModal, setShowViewModal] = useState(false);
+  const [viewModalData, setViewModalData] = useState("");
+
+  const showViewModalHandler = (id, query, response) => {
+    setViewModalData({
+      id,
+      query,
+      response,
+    });
+    setShowViewModal(true);
+  };
 
   useEffect(() => {
     setTotalData(answeredQuestionList.length);
@@ -32,7 +45,7 @@ function AdminAnsweredQuestions() {
           <thead>
             <tr>
               <th>Questiens</th>
-              <th colSpan={4}>Response List</th>
+              <th>Response List</th>
             </tr>
           </thead>
           <tbody>
@@ -44,23 +57,34 @@ function AdminAnsweredQuestions() {
                   return (
                     <tr key={index}>
                       <td>{data.query}</td>
-                      { 
-                      (Array.isArray(data.response)) &&
-                        data.response.map((item, ind) => {
-                          return(
-                            <td key={ind}>{item.query}</td>
-                          );
-                        })
-                     } 
-                     {typeof data.response === "string" && (
-                        <td>{data.response}</td>
-                      )}
+
+                      <td>
+                        <Button
+                          variant="outline-primary"
+                          onClick={() =>
+                            showViewModalHandler(
+                              data.id,
+                              data.query,
+                              data.response
+                            )
+                          }
+                        >
+                          View Response
+                        </Button>
+                      </td>
                     </tr>
                   );
                 })}
           </tbody>
         </Table>
       </div>
+      {showViewModal && (
+        <AdminViewModal
+          show={showViewModal}
+          onHide={() => setShowViewModal(false)}
+          data={viewModalData}
+        />
+      )}
       {totalData > itemsCountPerPage ? (
         <Pagination
           activePage={activePage}
@@ -75,5 +99,4 @@ function AdminAnsweredQuestions() {
     </div>
   );
 }
-
 export default AdminAnsweredQuestions;
