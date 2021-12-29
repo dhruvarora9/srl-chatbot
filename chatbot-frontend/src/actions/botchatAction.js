@@ -17,94 +17,39 @@ import {
 import { db } from "../firebase/app";
 import { toLowerCaseConverter } from "../shared/Helper";
 
-export const Get_Bot_Message = (ques, messagesList) => (dispatch) => {
-  dispatch({
-    type: SEND_BOT_MESSAGE,
-  });
-  let updatedQues = toLowerCaseConverter(ques);
-  const q = query(collection(db, "botchat"), where("query", "==", updatedQues));
-  let newMessageList;
-  getDocs(q).then((querySnapshot) => {
-    if (querySnapshot.empty) {
-      // No result found in db
-      // Add the unanswered question to db
-      addDoc(collection(db, "botchat"), {
-        query: updatedQues,
-        response: "",
-        type: false,
-        valid: true,
-      })
-        .then((res) => {
-          newMessageList = [
-            ...messagesList,
-            {
-              id: uuidv4(),
-              message: ques,
-              sender: "user",
-            },
-            {
-              id: uuidv4(),
-              message:
-                "No results found. Please try again with another keyword!",
-            },
-          ];
-          dispatch({
-            type: SEND_BOT_MESSAGE_FAILED,
-            payload: newMessageList,
-            error: "error",
-          });
+export const Get_Bot_Message =
+  (ques, messagesList, messageId) => (dispatch) => {
+    dispatch({
+      type: SEND_BOT_MESSAGE,
+    });
+    let updatedQues = toLowerCaseConverter(ques);
+    let updatedMessageList = messagesList.map((item) => {
+      if (item.id === messageId) {
+        return {
+          ...item,
+          flag: true,
+        };
+      }
+      return item;
+    });
+    const q = query(
+      collection(db, "botchat"),
+      where("query", "==", updatedQues)
+    );
+    let newMessageList;
+    getDocs(q).then((querySnapshot) => {
+      if (querySnapshot.empty) {
+        // No result found in db
+        // Add the unanswered question to db
+        addDoc(collection(db, "botchat"), {
+          query: updatedQues,
+          response: "",
+          type: false,
+          valid: true,
         })
-        .catch((error) => console.log(error));
-    } else {
-      // Result found in db
-      let messageArray = [];
-      querySnapshot.forEach((querySnapshotItem) => {
-        if (Array.isArray(querySnapshotItem.data().response)) {
-          //Result is an array (for multiple response)
-          querySnapshotItem.data().response.forEach((respItem) => {
-            messageArray.push({
-              id: uuidv4(),
-              firebase_id: respItem.reference.id,
-              message: respItem.query,
-            });
-          });
-          newMessageList = [
-            ...messagesList,
-            {
-              id: uuidv4(),
-              message: ques,
-              sender: "user",
-            },
-            {
-              id: uuidv4(),
-              message: "Here are a few suggestions",
-            },
-            {
-              id: uuidv4(),
-              message: messageArray,
-            },
-          ];
-        } else {
-          // Result is not an array
-          if (querySnapshotItem.data().type) {
-            // Result not an array and type true
+          .then((res) => {
             newMessageList = [
-              ...messagesList,
-              {
-                id: uuidv4(),
-                message: ques,
-                sender: "user",
-              },
-              {
-                id: uuidv4(),
-                firebase_id: querySnapshotItem.id,
-                message: querySnapshotItem.data().response,
-              },
-            ];
-          } else {
-            // Result not an array and type false
-            newMessageList = [
-              ...messagesList,
+              ...updatedMessageList,
               {
                 id: uuidv4(),
                 message: ques,
@@ -116,16 +61,85 @@ export const Get_Bot_Message = (ques, messagesList) => (dispatch) => {
                   "No results found. Please try again with another keyword!",
               },
             ];
+            dispatch({
+              type: SEND_BOT_MESSAGE_FAILED,
+              payload: newMessageList,
+              error: "error",
+            });
+          })
+          .catch((error) => console.log(error));
+      } else {
+        // Result found in db
+        let messageArray = [];
+        querySnapshot.forEach((querySnapshotItem) => {
+          if (Array.isArray(querySnapshotItem.data().response)) {
+            //Result is an array (for multiple response)
+            querySnapshotItem.data().response.forEach((respItem) => {
+              messageArray.push({
+                id: uuidv4(),
+                firebase_id: respItem.reference.id,
+                message: respItem.query,
+              });
+            });
+            newMessageList = [
+              ...updatedMessageList,
+              {
+                id: uuidv4(),
+                message: ques,
+                sender: "user",
+              },
+              {
+                id: uuidv4(),
+                message: "Here are a few suggestions",
+              },
+              {
+                id: uuidv4(),
+                flag: false,
+                message: messageArray,
+              },
+            ];
+          } else {
+            // Result is not an array
+            if (querySnapshotItem.data().type) {
+              // Result not an array and type true
+              newMessageList = [
+                ...updatedMessageList,
+                {
+                  id: uuidv4(),
+                  message: ques,
+                  sender: "user",
+                },
+                {
+                  id: uuidv4(),
+                  firebase_id: querySnapshotItem.id,
+                  message: querySnapshotItem.data().response,
+                },
+              ];
+            } else {
+              // Result not an array and type false
+              newMessageList = [
+                ...updatedMessageList,
+                {
+                  id: uuidv4(),
+                  message: ques,
+                  sender: "user",
+                },
+                {
+                  id: uuidv4(),
+                  message:
+                    "No results found. Please try again with another keyword!",
+                },
+              ];
+            }
           }
-        }
-      });
-      dispatch({
-        type: SEND_BOT_MESSAGE_SUCCESS,
-        payload: newMessageList,
-      });
-    }
-  });
-};
+        });
+        dispatch({
+          type: SEND_BOT_MESSAGE_SUCCESS,
+          payload: newMessageList,
+        });
+      }
+    });
+  };
 
 export const getAllBotMessages = () => (dispatch) => {
   getDocs(collection(db, "botchat"))

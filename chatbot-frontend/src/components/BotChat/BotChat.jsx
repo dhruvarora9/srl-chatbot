@@ -9,8 +9,8 @@ export default function BotChat() {
   const messages = useSelector((store) => store.botmessage.messages);
   const dispatch = useDispatch();
 
-  const optionClickHandler = (id, ques) => {
-    dispatch(Get_Bot_Message(ques, messages));
+  const optionClickHandler = (id, ques, messId) => {
+    dispatch(Get_Bot_Message(ques, messages, messId));
   };
 
   return (
@@ -28,11 +28,17 @@ export default function BotChat() {
                 <div className="flex justify-between p-1 flex-wrap">
                   {mesg.message.map((quesBubble) => (
                     <button
-                      className="  p-2 text-indigo-700 transition-colors duration-150 border border-indigo-500 rounded-3xl focus:shadow-outline hover:bg-indigo-500 hover:text-indigo-100"
+                      className="p-2 text-indigo-700 transition-colors duration-150 border border-indigo-500 rounded-3xl focus:shadow-outline hover:bg-indigo-500 hover:text-indigo-100 disabled:bg-gray-300 disabled:text-gray-600"
                       key={quesBubble.id}
-                      onClick={() =>
-                        optionClickHandler(quesBubble.id, quesBubble.message)
-                      }
+                      disabled={mesg.flag !== undefined && mesg.flag === true}
+                      onClick={() => {
+                        if (mesg.flag !== undefined && mesg.flag === false)
+                          optionClickHandler(
+                            quesBubble.id,
+                            quesBubble.message,
+                            mesg.id
+                          );
+                      }}
                     >
                       {quesBubble.message}
                     </button>
