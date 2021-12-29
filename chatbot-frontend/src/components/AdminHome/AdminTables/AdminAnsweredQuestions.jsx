@@ -69,7 +69,7 @@ function AdminAnsweredQuestions() {
                             )
                           }
                         >
-                          View Answeres
+                          View Response
                         </Button>
                       </td>
                     </tr>
