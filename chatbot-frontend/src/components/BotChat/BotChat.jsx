@@ -1,6 +1,9 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { Get_Bot_Message } from "../../actions/botchatAction";
+import {
+  getChatBubbleMessage,
+  Get_Bot_Message,
+} from "../../actions/botchatAction";
 import BotChatInput from "../BotChatInput/BotChatInput";
 import MessageBubble from "../MessageBubble/MessageBubble";
 import "./BotChat.css";
@@ -10,8 +13,9 @@ export default function BotChat() {
   const dispatch = useDispatch();
   const divRef = useRef(null);
 
-  const optionClickHandler = (id, ques, messId) => {
-    dispatch(Get_Bot_Message(divRef, ques, messages, messId));
+  const optionClickHandler = (ques, messId, referenceId) => {
+    //reference id == firebase_id for the bubble element
+    dispatch(getChatBubbleMessage(divRef, referenceId, ques, messages, messId));
   };
 
   return (
@@ -35,9 +39,9 @@ export default function BotChat() {
                       onClick={() => {
                         if (mesg.flag !== undefined && mesg.flag === false)
                           optionClickHandler(
-                            quesBubble.id,
                             quesBubble.message,
-                            mesg.id
+                            mesg.id,
+                            quesBubble.firebase_id
                           );
                       }}
                     >

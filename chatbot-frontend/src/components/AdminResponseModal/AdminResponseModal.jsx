@@ -47,6 +47,7 @@ export default function AdminResponseModal({ show, data, onHide }) {
         multiResponse
       )
     );
+    onHide();
   };
 
   return (
@@ -55,12 +56,12 @@ export default function AdminResponseModal({ show, data, onHide }) {
         onClick={onHide}
         className="absolute inset-0 h-full w-full bg opacity-70 bg-slate-700"
       ></div>
-      <div className="mx-auto p-6 w-3/5 flex flex-col bg-white opacity-100 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
+      <div className="mx-auto p-3 md:p-6 w-5/6 md:w-3/5 flex flex-col bg-white opacity-100 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="flex justify-between">
           <span className="text-xl font-bold">Add a Response</span>
           <button
             onClick={onHide}
-            className="rounded-full bg-red-700 text-white  px-2"
+            className="rounded-full bg-red-700 text-white px-2"
           >
             X
           </button>
@@ -78,7 +79,7 @@ export default function AdminResponseModal({ show, data, onHide }) {
             onSubmit={handleSubmitEvent}
           >
             {({ isSubmitting, values, errors, touched, setFieldValue }) => (
-              <Form className="flex flex-col  p-5 mt-4 space-y-4 text-black bg-white rounded-lg  lg:p-10 lg:space-y-6">
+              <Form className="flex flex-col p-2  md:p-5 mt-4 space-y-4 text-black bg-white rounded-lg  lg:p-10 lg:space-y-6">
                 <Field name="text">
                   {({ field }) => (
                     <div>
@@ -95,7 +96,7 @@ export default function AdminResponseModal({ show, data, onHide }) {
                 {errors.text && touched.text ? (
                   <div className="text-red-600">{errors.text}</div>
                 ) : null}
-                <label className="w-4/6 mx-auto">
+                <label className="w-5/6 md:w-4/6 mx-auto">
                   <Field type="checkbox" name="multiResponse" className="" />{" "}
                   Check for multi Response
                 </label>

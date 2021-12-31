@@ -3,7 +3,6 @@ import {
   SEND_BOT_MESSAGE_FAILED,
   SEND_BOT_MESSAGE_SUCCESS,
 } from "../action-types/actionTypes";
-import API from "../shared/API_EXPLICIT";
 import { v4 as uuidv4 } from "uuid";
 import {
   collection,
@@ -19,6 +18,9 @@ import { toLowerCaseConverter } from "../shared/Helper";
 
 export const Get_Bot_Message =
   (divRef, ques, messagesList, messageId) => (dispatch) => {
+    // divRef: reference to last message,
+    // messageId: message id for bubble to flag it true
+
     dispatch({
       type: SEND_BOT_MESSAGE,
     });
@@ -32,6 +34,7 @@ export const Get_Bot_Message =
       }
       return item;
     });
+
     const q = query(
       collection(db, "botchat"),
       where("query", "==", updatedQues)
@@ -78,7 +81,7 @@ export const Get_Bot_Message =
             querySnapshotItem.data().response.forEach((respItem) => {
               messageArray.push({
                 id: uuidv4(),
-                firebase_id: respItem.reference.id,
+                firebase_id: respItem.firebase_id,
                 message: respItem.query,
               });
             });
@@ -140,6 +143,72 @@ export const Get_Bot_Message =
         });
         divRef.current.scrollIntoView({ behavior: "smooth" });
       }
+    });
+  };
+
+export const getChatBubbleMessage =
+  (divRef, id, ques, messagesList, messageId) => (dispatch) => {
+    let newMessageList = [];
+    let updatedMessageList = messagesList.map((item) => {
+      if (item.id === messageId) {
+        return {
+          ...item,
+          flag: true,
+        };
+      }
+      return item;
+    });
+
+    getDoc(doc(db, "botchat", id)).then((doc) => {
+      if (Array.isArray(doc.data().response)) {
+        //Result is an array (for multiple response)
+        let messageArray = [];
+        doc.data().response.forEach((respItem) => {
+          messageArray.push({
+            id: uuidv4(),
+            firebase_id: respItem.firebase_id,
+            message: respItem.query,
+          });
+        });
+        newMessageList = [
+          ...updatedMessageList,
+          {
+            id: uuidv4(),
+            message: ques,
+            sender: "user",
+          },
+          {
+            id: uuidv4(),
+            message: "Here are a few suggestions",
+          },
+          {
+            id: uuidv4(),
+            flag: false,
+            message: messageArray,
+          },
+        ];
+      } else {
+        // Result is not an array
+
+        newMessageList = [
+          ...updatedMessageList,
+          {
+            id: uuidv4(),
+            message: ques,
+            sender: "user",
+          },
+          {
+            id: uuidv4(),
+            firebase_id: doc.id,
+            message: doc.data().response,
+          },
+        ];
+      }
+      dispatch({
+        type: SEND_BOT_MESSAGE_SUCCESS,
+        payload: newMessageList,
+      });
+      divRef.current.scrollIntoView({ behavior: "smooth" });
     });
   };
 

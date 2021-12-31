@@ -138,6 +138,7 @@ export const submitResponseForValidQuestion =
       let newResponseList = responseList.map((item) => {
         return {
           query: item.text,
+          firebase_id: item.id,
           reference: `/botchat/${item.id}`,
         };
       });

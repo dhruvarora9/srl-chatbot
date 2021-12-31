@@ -15,26 +15,6 @@ function ResponseMultiselectDropdown(props) {
 
   const [field, meta] = useField(props);
 
-  let getMultipleOptionData = async () => {
-    const q = query(
-      collection(db, "botchat"),
-      where("valid", "==", true),
-      where("type", "==", true)
-    );
-    let optionList = [];
-    const querySnapshot = await getDocs(q);
-
-    querySnapshot.forEach((doc) => {
-      optionList.push({
-        id: doc.id,
-        reference: `/botchat/${doc.id}`,
-        text: doc.data().query,
-      });
-    });
-
-    setMultiOptionData(optionList);
-  };
-
   let addItemHandler = (selectedList) => {
     setFieldValue("responseList", selectedList);
   };
@@ -43,10 +23,31 @@ function ResponseMultiselectDropdown(props) {
   };
 
   useEffect(() => {
+    let check = true;
     if (multiResponse) {
-      console.log("if condition in if called");
+      let getMultipleOptionData = async () => {
+        const q = query(
+          collection(db, "botchat"),
+          where("valid", "==", true),
+          where("type", "==", true)
+        );
+        let optionList = [];
+        const querySnapshot = await getDocs(q);
+
+        querySnapshot.forEach((doc) => {
+          optionList.push({
+            id: doc.id,
+            reference: `/botchat/${doc.id}`,
+            text: doc.data().query,
+          });
+        });
+        if (check) {
+          setMultiOptionData(optionList);
+        }
+      };
       getMultipleOptionData();
     }
+    return () => (check = false);
   }, []);
 
   return (

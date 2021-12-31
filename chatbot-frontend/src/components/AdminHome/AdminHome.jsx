@@ -10,13 +10,13 @@ const AdminHome = (props) => {
   return (
     <div className="main-container">
       <AdminNavbar />
-      <div className="w-full py-5 flex justify-center">
+      <div className="w-full py-5 flex flex-col md:flex-row justify-center">
         <button
           style={
             currentPage === "valid" ? { backgroundColor: "#3730a3" } : null
           }
           onClick={() => setCurrentPage("valid")}
-          className="h-10 px-5 m-2 text-indigo-100 font-semibold transition-colors duration-150 bg-indigo-400 rounded-lg focus:shadow-outline hover:bg-indigo-500"
+          className="h-10 px-5 m-2  text-indigo-100 font-semibold transition-colors duration-150 bg-indigo-400 rounded-lg focus:shadow-outline hover:bg-indigo-500"
         >
           Requested Question List
         </button>

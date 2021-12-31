@@ -31,7 +31,6 @@ const botmessage = (state = initialState, action) => {
         error: null,
       };
     case SEND_BOT_MESSAGE_SUCCESS:
-      console.log("success");
       return {
         ...state,
         loading: false,
