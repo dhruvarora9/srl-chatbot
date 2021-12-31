@@ -1,18 +1,13 @@
 import React from "react";
-import { Formik, Field, Form, ErrorMessage, useFormikContext } from "formik";
+import { Formik, Field, Form } from "formik";
 import * as Yup from "yup";
-import { useState } from "react";
-import { Multiselect } from "multiselect-react-dropdown";
-
-import { collection, query, where, getDocs } from "firebase/firestore";
-import { useEffect } from "react";
-import { db } from "../../firebase/app";
+// import { Multiselect } from "multiselect-react-dropdown";
 import ResponseMultiselectDropdown from "./ResponseMultiselectDropdown";
 import { useDispatch } from "react-redux";
 import { submitResponseForValidQuestion } from "../../actions/adminAction";
 
 export default function AdminResponseModal({ show, data, onHide }) {
-  const [multiOptionData, setMultiOptionData] = useState([]);
+  // const [multiOptionData, setMultiOptionData] = useState([]);
   const dispatch = useDispatch();
 
   const validateRequestCallBack = Yup.object().shape({

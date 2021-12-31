@@ -3,16 +3,16 @@ import { Table, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Pagination from "react-js-pagination";
 
-import { collection, getDocs, query, where } from "firebase/firestore";
-import { db } from "../../../firebase/app";
+// import { collection } from "firebase/firestore";
+// import { db } from "../../../firebase/app";
 import "../adminhome.styles.css";
 import AdminResponse from "../AdminResponse";
 import { useDispatch, useSelector } from "react-redux";
 import { getInvalidQuestionList, editInvalidQuestion } from "../../../actions/adminAction";
 
 const AdminInvalidQuestion = (props) => {
-  const { editModal, setEditModal } = props;
-  const usersCollectionRef = collection(db, "userquery");
+  // const { editModal, setEditModal } = props;
+  // const usersCollectionRef = collection(db, "userquery");
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [responseModalData, setResponseModalData] = useState("");

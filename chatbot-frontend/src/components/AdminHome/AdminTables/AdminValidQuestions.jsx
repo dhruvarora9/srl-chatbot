@@ -3,7 +3,6 @@ import { Table, Button } from "react-bootstrap";
 import { toast } from "react-toastify";
 import Pagination from "react-js-pagination";
 import "../adminhome.styles.css";
-import AdminResponse from "../AdminResponse";
 import { useDispatch, useSelector } from "react-redux";
 import {
   getValidQuestionList,
@@ -12,7 +11,6 @@ import {
 import AdminResponseModal from "../../AdminResponseModal/AdminResponseModal";
 
 const AdminValidQuestion = (props) => {
-  const { editModal, setEditModal } = props;
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [responseModalData, setResponseModalData] = useState("");

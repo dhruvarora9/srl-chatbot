@@ -1,9 +1,6 @@
 import React, { useRef } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  getChatBubbleMessage,
-  Get_Bot_Message,
-} from "../../actions/botchatAction";
+import { getChatBubbleMessage } from "../../actions/botchatAction";
 import BotChatInput from "../BotChatInput/BotChatInput";
 import MessageBubble from "../MessageBubble/MessageBubble";
 import "./BotChat.css";
