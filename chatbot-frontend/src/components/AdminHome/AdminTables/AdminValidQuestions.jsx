@@ -14,7 +14,7 @@ const AdminValidQuestion = (props) => {
 
   const [showResponseModal, setShowResponseModal] = useState(false);
   const [responseModalData, setResponseModalData] = useState("");
-  const { loading: adminLoading, validQuestionList } = useSelector(
+  const { validQuestionList } = useSelector(
     (store) => store.admin
   );
   const dispatch = useDispatch();
@@ -45,7 +45,7 @@ const AdminValidQuestion = (props) => {
 
   useEffect(() => {
     dispatch(getValidQuestionList());
-  }, []);
+  }, [dispatch]);
 
   return (
     <div>
