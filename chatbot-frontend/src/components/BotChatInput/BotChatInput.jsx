@@ -20,6 +20,7 @@ export default function BotChatInput({ divRef }) {
       .min(2, "Minimum 2 characters required")
       .required("Please enter valid Message"),
   });
+
   return (
     <div className="botchatinput-rootContainer">
       <div className="botchatinput-mainContainer">
