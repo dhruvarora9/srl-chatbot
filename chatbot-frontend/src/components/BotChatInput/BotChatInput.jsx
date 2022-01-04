@@ -17,9 +17,10 @@ export default function BotChatInput({ divRef }) {
   const validateRequestCallBack = Yup.object().shape({
     text: Yup.string()
       .trim()
-      .min(2, "Minimum 2 characters required")
+      .min(1, "Minimum 1 characters required")
       .required("Please enter valid Message"),
   });
+
   return (
     <div className="botchatinput-rootContainer">
       <div className="botchatinput-mainContainer">
@@ -38,22 +39,18 @@ export default function BotChatInput({ divRef }) {
                       className="w-full py-2 px-1 mx-1"
                       type="text"
                       {...field}
-                      placeholder="write your text here"
+                      placeholder="write your question here..."
                     />
                   )}
                 </Field>
                 <button
-                  className="bg-cyan-600 rounded-md text-white w-1/5"
+                  className="bg-cyan-600 rounded-md text-white w-1/5 disabled:bg-cyan-800 disabled:cursor-not-allowed"
                   type="submit"
+                  disabled={errors.text && touched.text}
                 >
                   Send
                 </button>
               </div>
-              {errors.text && touched.text ? (
-                <span className="text-red-500 px-1 text-left">
-                  {errors.text}
-                </span>
-              ) : null}
             </Form>
           )}
         </Formik>

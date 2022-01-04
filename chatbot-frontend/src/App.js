@@ -15,14 +15,16 @@ function App() {
   //   dispatch(checkLoginStatus());
   // });
   useEffect(() => {
-    onAuthStateChanged(auth, (user) => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
+        console.log(user);
         dispatch(setLoginStatus(user.email, user.accessToken, "Admin"));
       } else {
         dispatch(setLoginStatus(null, null, null));
       }
       setLoading(false);
     });
+    return unsubscribe;
   }, []);
   return (
     <div className="App">

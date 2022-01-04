@@ -14,7 +14,11 @@ import {
   addDoc,
 } from "firebase/firestore";
 import { db } from "../firebase/app";
-import { toLowerCaseConverter } from "../shared/Helper";
+import {
+  removeHTMLHandler,
+  stringContainHTMLHandler,
+  toLowerCaseConverter,
+} from "../shared/Helper";
 
 export const Get_Bot_Message =
   (divRef, ques, messagesList, messageId) => (dispatch) => {
@@ -24,7 +28,8 @@ export const Get_Bot_Message =
     dispatch({
       type: SEND_BOT_MESSAGE,
     });
-    let updatedQues = toLowerCaseConverter(ques);
+    let updatedQues = stringContainHTMLHandler(toLowerCaseConverter(ques));
+    let newMessageList;
     let updatedMessageList = messagesList.map((item) => {
       if (item.id === messageId) {
         return {
@@ -34,12 +39,29 @@ export const Get_Bot_Message =
       }
       return item;
     });
+    if (updatedQues.length === 0) {
+      newMessageList = [
+        ...updatedMessageList,
+
+        {
+          id: uuidv4(),
+          message: "Please Enter a valid query",
+        },
+      ];
+      dispatch({
+        type: SEND_BOT_MESSAGE_FAILED,
+        payload: newMessageList,
+        error: "error",
+      });
+      divRef.current.scrollIntoView({ behavior: "smooth" });
+      return;
+    }
 
     const q = query(
       collection(db, "botchat"),
       where("query", "==", updatedQues)
     );
-    let newMessageList;
+
     getDocs(q).then((querySnapshot) => {
       if (querySnapshot.empty) {
         // No result found in db
@@ -55,7 +77,7 @@ export const Get_Bot_Message =
               ...updatedMessageList,
               {
                 id: uuidv4(),
-                message: ques,
+                message: updatedQues,
                 sender: "user",
               },
               {
@@ -89,7 +111,7 @@ export const Get_Bot_Message =
               ...updatedMessageList,
               {
                 id: uuidv4(),
-                message: ques,
+                message: updatedQues,
                 sender: "user",
               },
               {
@@ -110,7 +132,7 @@ export const Get_Bot_Message =
                 ...updatedMessageList,
                 {
                   id: uuidv4(),
-                  message: ques,
+                  message: updatedQues,
                   sender: "user",
                 },
                 {
@@ -125,7 +147,7 @@ export const Get_Bot_Message =
                 ...updatedMessageList,
                 {
                   id: uuidv4(),
-                  message: ques,
+                  message: updatedQues,
                   sender: "user",
                 },
                 {
