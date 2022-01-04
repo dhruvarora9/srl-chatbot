@@ -2,6 +2,7 @@ import { useSelector } from "react-redux";
 import { Route, Routes } from "react-router";
 import AdminHome from "../components/AdminHome/AdminHome";
 import Home from "../components/Home/Home";
+import LiveChat from "../components/LiveChat/LiveChat";
 
 import Login from "../components/login-admin-styles/login/Login";
 import PrivateRoute from "./PrivateRoute";
@@ -27,6 +28,7 @@ const RouteMain = () => {
           </PrivateRoute>
         }
       />
+      <Route path="/livechat/:roomId" element={<LiveChat />} />
     </Routes>
   );
 };

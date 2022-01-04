@@ -17,7 +17,6 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
         dispatch(setLoginStatus(user.email, user.accessToken, "Admin"));
       } else {
         dispatch(setLoginStatus(null, null, null));
