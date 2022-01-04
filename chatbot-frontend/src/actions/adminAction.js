@@ -60,6 +60,7 @@ export const getInvalidQuestionList = () => (dispatch) => {
 };
 
 export const editValidQuestion = (quesid) => (dispatch) => {
+  console.log("edit valid called");
   const getEditQuestion = async () => {
     const queryRef = doc(db, "botchat", quesid);
     await updateDoc(queryRef, {
