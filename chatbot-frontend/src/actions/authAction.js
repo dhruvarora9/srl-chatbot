@@ -1,4 +1,4 @@
-import { signInWithEmailAndPassword, signOut } from "firebase/auth";
+import { getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 
 import {
   LOGIN_ADMIN,
@@ -8,6 +8,14 @@ import {
 } from "../action-types/actionTypes";
 import { auth } from "../firebase/app";
 // import API from "../shared/API_EXPLICIT";
+
+export const setCustomUserClain = (uid) => {
+  getAuth()
+    .setCustomUserClaims(uid, { admin: true })
+    .then(() => {
+      console.log("admin priviledge set");
+    });
+};
 
 export const adminLogin = (email, password, navigate) => (dispatch) => {
   dispatch({
