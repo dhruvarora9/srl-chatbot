@@ -2,6 +2,10 @@ require("dotenv").config();
 var nodeMailer = require("nodemailer");
 const express = require("express");
 const app = express();
+app.use(express.json());
+const adminRouter = require("./firebase/addAdminPriviledge");
+
+app.use("/admin/", adminRouter);
 
 app.post("/mailer", (req, res) => {
   let mailTransporter = nodeMailer.createTransport({

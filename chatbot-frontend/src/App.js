@@ -3,6 +3,7 @@ import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
 import {
   checkLoginStatus,
+  logoutAdmin,
   setCustomUserClain,
   setLoginStatus,
 } from "./actions/authAction";
@@ -25,7 +26,7 @@ function App() {
         // setCustomUserClain(user.uid);
         dispatch(setLoginStatus(user.email, user.accessToken, "Admin"));
       } else {
-        dispatch(setLoginStatus(null, null, null));
+        dispatch(logoutAdmin());
       }
       setLoading(false);
     });
