@@ -7,12 +7,9 @@
 // };
 
 module.exports = {
-  purge: ["./src/**/*.{js,jsx,ts,tsx}", "./public/index.html"],
+  purge: ["./src/**/*.{js,jsx,ts,tsx}"],
   darkMode: false,
   theme: {
-    colors: {
-      //some colors
-    },
     extend: {
       animation: {
         bounce200: "bounce 1s infinite 200ms",

@@ -10,6 +10,8 @@ const initialState = {
   messages: [],
   roomId: null,
   error: null,
+  senderName: "",
+  senderEmail: "",
   messageError: null,
 };
 
@@ -18,6 +20,10 @@ const livechat = (state = initialState, action) => {
     case ROOM_VERIFY_SUCCESS:
       return {
         ...state,
+        loading: false,
+        messages: action.payload,
+        error: null,
+        roomId: action.roomId,
       };
     case LIVE_CHAT_FAILED:
       return {

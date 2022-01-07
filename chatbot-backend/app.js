@@ -1,13 +1,17 @@
 require("dotenv").config();
 var nodeMailer = require("nodemailer");
 const express = require("express");
+let cors = require("cors");
 const app = express();
 app.use(express.json());
+app.use(cors());
 const adminRouter = require("./firebase/addAdminPriviledge");
 
-app.use("/admin/", adminRouter);
+app.use("/api/admin/", adminRouter);
+const userList = "sneha.sardar@indusnet.co.in,dhruv.arora@indusnet.co.in";
 
-app.post("/mailer", (req, res) => {
+app.post("/api/mailer", (req, res) => {
+  let { roomId, user } = req.body;
   let mailTransporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -18,15 +22,22 @@ app.post("/mailer", (req, res) => {
 
   let mailDetails = {
     from: "appfirebaseuser@gmail.com",
-    to: "sneha.sardar@indusnet.co.in",
-    subject: "Test mail",
-    text: "hello...user wants to chat with a person :)",
+    to: userList,
+    subject: "Request to join the live chat with user",
+    text: `Hi,
+    The user has requested to connect with you, click here 
+    http://localhost:3000/livechatcs/${roomId}
+      `,
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
-      console.log("ERROR:", err);
+      res.status(500).json({
+        message: "Message failed",
+      });
     } else {
-      console.log("Email sent successfully");
+      res.json({
+        message: "Message sent successfully",
+      });
     }
   });
 });
