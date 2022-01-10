@@ -13,6 +13,7 @@ import {
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
   SEND_MESSAGE,
+  SET_SENDER_DETAILS,
 } from "../action-types/actionTypes";
 import app from "../firebase/app";
 import axios from "../shared/API_EXPLICIT";
@@ -31,7 +32,7 @@ export const checkRoomStatusCS =
             console.log("already connection is established");
             dispatch({
               type: LIVE_CHAT_FAILED,
-              payload: "Connection already established!",
+              payload: "Connection already established! ",
             });
           } else if (
             !data.expired &&
@@ -39,21 +40,29 @@ export const checkRoomStatusCS =
             data.csEmail === csEmail
           ) {
             // cs executive can join again
-            console.log(
-              "Temporary for expiring chat on reload (cs can join again)"
-            );
+            console.log("(cs can join again)");
             // Temporary for expiring chat on reload
-            dispatch({
-              type: LIVE_CHAT_FAILED,
-              payload: "The chat has expired!",
-            });
+            // dispatch({
+            //   type: LIVE_CHAT_FAILED,
+            //   payload: "The chat has expired!",
+            // });
             // dispatch(sendMessage(roomId));
-            // unsubscribe = dispatch(establishMessageConnectionCS(roomId));
+            dispatch({
+              type: SET_SENDER_DETAILS,
+              senderName: "customer support",
+              senderEmail: data.csEmail,
+            });
+            unsubscribe = dispatch(establishMessageConnectionCS(roomId));
           } else if (data.expired !== undefined && data.expired !== true) {
             // Connection needs to be established
             unsubscribe = dispatch(
               registerCSinChat(roomId, csEmail, data.userEmail)
             );
+            dispatch({
+              type: SET_SENDER_DETAILS,
+              senderName: "customer support",
+              senderEmail: csEmail,
+            });
           } else {
             // If chat has expired
             console.log("chat has expired");
@@ -70,6 +79,54 @@ export const checkRoomStatusCS =
       .catch((error) => console.log(error));
   };
 
+export const checkRoomStatusUser = (roomId) => (dispatch) => {
+  const dbRef = ref(db);
+  const senderEmail = sessionStorage.getItem("userEmail");
+  const senderName = sessionStorage.getItem("userName");
+  console.log("check room status called ");
+  if (senderEmail) {
+    get(child(dbRef, `roomInfo/` + roomId))
+      .then((snapshot) => {
+        if (snapshot.exists()) {
+          const data = snapshot.val();
+          console.log(
+            data.expired,
+            senderEmail === data.userEmail,
+            ": sender email"
+          );
+          if (!data.expired && data.userEmail === senderEmail) {
+            //Re-establish the connection
+            console.log("reconnect the user");
+            dispatch({
+              type: SET_SENDER_DETAILS,
+              senderName: senderName,
+              senderEmail: senderEmail,
+            });
+            return dispatch(checkIfCSJoined(roomId));
+          } else {
+            //Expired is set to true
+            console.log("user: link has expired ");
+            dispatch({
+              type: LIVE_CHAT_FAILED,
+              payload: "The chat link has expired!",
+            });
+          }
+        } else {
+          console.log("No Room exist for the following id");
+        }
+      })
+      .catch((error) => {
+        console.log("Error in checkroomstatususer :", error);
+      });
+  } else {
+    console.log("user has not filled the form");
+    dispatch({
+      type: LIVE_CHAT_FAILED,
+      payload: "User is not Authorized!",
+    });
+  }
+};
+
 export const registerCSinChat = (roomId, csEmail, userEmail) => (dispatch) => {
   var updateEmail = {
     csEmail,
@@ -81,7 +138,9 @@ export const registerCSinChat = (roomId, csEmail, userEmail) => (dispatch) => {
   update(ref(db), updates)
     .then((response) => {
       console.log("data saved successfully");
-      const unsubscribe = dispatch(createNewRoomInRoomsCollection(roomId));
+      const unsubscribe = dispatch(
+        createNewRoomInRoomsCollection(roomId, csEmail)
+      );
 
       return unsubscribe;
     })
@@ -109,24 +168,26 @@ export const sendMessage = (roomId, message, sender) => (dispatch) => {
     });
 };
 
-export const createNewRoomInRoomsCollection = (roomId) => (dispatch) => {
-  //Intializing room for chatting when cs is registered
-  const messageBody = {
-    message: "This is a test message",
-    sender: "customersupport1@gmail.com",
+export const createNewRoomInRoomsCollection =
+  (roomId, csEmail) => (dispatch) => {
+    //Intializing room for chatting when cs is registered
+    const messageBody = {
+      message: "This is a test message",
+      sender: csEmail,
+    };
+    const infoListRef = ref(db, "/rooms/" + roomId);
+    const newPostRef = push(infoListRef);
+    set(newPostRef, messageBody)
+      .then((response) => {
+        console.log("room created successfully");
+        return dispatch(establishMessageConnectionCS(roomId));
+      })
+      .catch((error) => {
+        console.log("Failed to write data", error);
+      });
   };
-  const infoListRef = ref(db, "/rooms/" + roomId);
-  const newPostRef = push(infoListRef);
-  set(newPostRef, messageBody)
-    .then((response) => {
-      console.log("room created successfully");
-      return dispatch(establishMessageConnectionCS(roomId));
-    })
-    .catch((error) => {
-      console.log("Failed to write data", error);
-    });
-};
 
+//establishing a connection with the server
 export const establishMessageConnectionCS = (roomId) => (dispatch) => {
   const messageUpdateRef = ref(db, "rooms/" + roomId);
   const unsubscribe = onValue(
@@ -134,13 +195,17 @@ export const establishMessageConnectionCS = (roomId) => (dispatch) => {
     (snapshot) => {
       const data = snapshot.val();
       console.log("ws connection established", data);
-      let messageArray = Object.keys(data).map((id) => {
-        return {
-          id: id,
-          message: data[id].message,
-          sender: data[id].sender,
-        };
-      });
+      let messageArray = [];
+      if (data) {
+        messageArray = Object.keys(data).map((id) => {
+          return {
+            id: id,
+            message: data[id].message,
+            sender: data[id].sender,
+          };
+        });
+      }
+
       dispatch({
         type: ROOM_VERIFY_SUCCESS,
         payload: messageArray,
@@ -172,6 +237,12 @@ export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
       })
       .then((resp) => {
         console.log("sent mail");
+        dispatch({
+          type: SET_SENDER_DETAILS,
+          senderName: name,
+          senderEmail: email,
+          roomId: roomId,
+        });
         return dispatch(checkIfCSJoined(roomId));
       })
       .catch((error) => console.log(error));
@@ -179,6 +250,7 @@ export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
   let arr = [];
 };
 
+//Check if Customer support has joined
 export const checkIfCSJoined = (roomId) => (dispatch) => {
   const dataRef = ref(db, "roomInfo/" + roomId);
   const uns = onValue(dataRef, (snapshot) => {
@@ -189,6 +261,7 @@ export const checkIfCSJoined = (roomId) => (dispatch) => {
       uns();
       return dispatch(establishMessageConnectionCS(roomId));
     } else {
+      console.log("waiting for cs to join");
       //CS has not joined till yet
     }
   });

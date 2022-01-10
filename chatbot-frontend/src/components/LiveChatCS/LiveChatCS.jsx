@@ -7,6 +7,7 @@ import { useParams } from "react-router-dom";
 import { checkRoomStatusCS, sendMessage } from "../../actions/livechatAction";
 import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
+import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
 
 function LiveChatCS() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
@@ -31,7 +32,7 @@ function LiveChatCS() {
   });
 
   const sendLiveChatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(roomId, text, "customersupport"));
+    dispatch(sendMessage(roomId, text, csEmail));
     resetForm();
     setSubmitting(false);
   };
@@ -50,9 +51,14 @@ function LiveChatCS() {
         <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
           <div className="h-1/6 ">Navbar</div>
           <div className="h-4/6 py-1 px-2">
-            <div className="border-2 h-full rounded-md p-2">
+            <div className="border-2 h-full rounded-md p-2 flex flex-col">
               {messageList.map((item) => (
-                <p>{item.message}</p>
+                <LiveChatMessageBubble
+                  key={item.id}
+                  id={item.id}
+                  children={item.message}
+                  sender={item.sender}
+                />
               ))}
             </div>
           </div>

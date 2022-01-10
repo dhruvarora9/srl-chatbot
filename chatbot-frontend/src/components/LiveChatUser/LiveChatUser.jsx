@@ -2,20 +2,32 @@ import React, { useEffect, useState } from "react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createRoomLiveChatUser,
-  sendMessage,
-} from "../../actions/livechatAction";
-
+import { checkRoomStatusUser, sendMessage } from "../../actions/livechatAction";
+import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
+
+import { useLocation, useParams } from "react-router-dom";
+import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
 
 function LiveChatUser() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
   const mainLiveChatError = useSelector((store) => store.livechat.error);
   const messagesList = useSelector((store) => store.livechat.messages);
   const roomId = useSelector((state) => state.livechat.roomId);
+  const formStatus = useSelector((state) => state.livechat.formStatus);
+  const senderEmail = useSelector((state) => state.livechat.senderEmail);
+
   const dispatch = useDispatch();
+  const params = useParams();
   // const dispatch = useDispatch();
+
+  useEffect(() => {
+    if (!formStatus) {
+      console.log("use effect called");
+      let roomId = params.roomId;
+      dispatch(checkRoomStatusUser(roomId));
+    }
+  }, []);
 
   const validateRequestCallBack = Yup.object().shape({
     text: Yup.string()
@@ -25,21 +37,31 @@ function LiveChatUser() {
   });
 
   const sendLivechatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(roomId, text, "user"));
+    dispatch(sendMessage(roomId, text, senderEmail));
     resetForm();
     setSubmitting(false);
   };
 
   return (
     <>
+      {!mainLiveChatLoading && mainLiveChatError && (
+        <div>
+          <LiveChatExpiry />
+        </div>
+      )}
       {!mainLiveChatLoading && !mainLiveChatError && (
         <div className="w-screen h-screen bg-sky-800 pt-20">
           <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
             <div className="h-1/6 ">Navbar</div>
             <div className="h-4/6 py-1 px-2">
-              <div className="border-2 h-full rounded-md p-2">
+              <div className="border-2 h-full rounded-md p-2 flex flex-col">
                 {messagesList.map((item) => (
-                  <p>{item.message}</p>
+                  <LiveChatMessageBubble
+                    key={item.id}
+                    id={item.id}
+                    children={item.message}
+                    sender={item.sender}
+                  />
                 ))}
               </div>
             </div>
