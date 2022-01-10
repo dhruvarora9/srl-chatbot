@@ -5,6 +5,7 @@ import {
   onValue,
   push,
   ref,
+  remove,
   set,
   update,
 } from "firebase/database";
@@ -13,6 +14,7 @@ import {
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
   SEND_MESSAGE,
+  SET_FORM_STATUS,
   SET_SENDER_DETAILS,
 } from "../action-types/actionTypes";
 import app from "../firebase/app";
@@ -89,12 +91,7 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
       .then((snapshot) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
-          console.log(
-            data.expired,
-            senderEmail === data.userEmail,
-            ": sender email"
-          );
-          if (!data.expired && data.userEmail === senderEmail) {
+          if (!data.expired && data.userEmail === senderEmail && data.csEmail) {
             //Re-establish the connection
             console.log("reconnect the user");
             dispatch({
@@ -103,6 +100,19 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
               senderEmail: senderEmail,
             });
             return dispatch(checkIfCSJoined(roomId));
+          } else if (
+            !data.expired &&
+            data.userEmail === senderEmail &&
+            !data.csEmail
+          ) {
+            // Mailing system failed and refresh occured
+            dispatch({
+              type: LIVE_CHAT_FAILED,
+              payload: "There is some issue connection. Please refresh!",
+            });
+            sessionStorage.removeItem("userEmail");
+            sessionStorage.removeItem("userName");
+            dispatch(deleteRoomFromRoomInfo(roomId));
           } else {
             //Expired is set to true
             console.log("user: link has expired ");
@@ -127,6 +137,14 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
   }
 };
 
+export const deleteRoomFromRoomInfo = (roomId) => (dispatch) => {
+  remove(ref(db, "/roomInfo/" + roomId))
+    .then(() => {
+      console.log("room info removed successfully");
+    })
+    .catch((error) => console.log("Error while removing the room ifo", error));
+};
+
 export const registerCSinChat = (roomId, csEmail, userEmail) => (dispatch) => {
   var updateEmail = {
     csEmail,
@@ -149,7 +167,7 @@ export const registerCSinChat = (roomId, csEmail, userEmail) => (dispatch) => {
     });
 };
 
-export const sendMessage = (roomId, message, sender) => (dispatch) => {
+export const sendMessage = (divRef, roomId, message, sender) => (dispatch) => {
   //sending message
   dispatch({
     type: SEND_MESSAGE,
@@ -162,6 +180,7 @@ export const sendMessage = (roomId, message, sender) => (dispatch) => {
   })
     .then((response) => {
       console.log("message sent successfully");
+      divRef.current.scrollIntoView({ behavior: "smooth" });
     })
     .catch((error) => {
       console.log("Failed to write data", error);
@@ -245,9 +264,21 @@ export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
         });
         return dispatch(checkIfCSJoined(roomId));
       })
-      .catch((error) => console.log(error));
+      .catch((error) => {
+        console.log(error);
+        dispatch({
+          type: LIVE_CHAT_FAILED,
+          payload: "There is some issue connection. Please refresh!",
+        });
+        sessionStorage.removeItem("userEmail");
+        sessionStorage.removeItem("userName");
+        dispatch(deleteRoomFromRoomInfo(roomId));
+        dispatch({
+          type: SET_FORM_STATUS,
+          payload: false,
+        });
+      });
   });
-  let arr = [];
 };
 
 //Check if Customer support has joined

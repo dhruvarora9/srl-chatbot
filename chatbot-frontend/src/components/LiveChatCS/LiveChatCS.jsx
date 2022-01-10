@@ -8,6 +8,7 @@ import { checkRoomStatusCS, sendMessage } from "../../actions/livechatAction";
 import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
 import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
+import { useRef } from "react";
 
 function LiveChatCS() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
@@ -15,6 +16,7 @@ function LiveChatCS() {
   const messageList = useSelector((store) => store.livechat.messages);
   const csEmail = useSelector((store) => store.auth.email);
   const unsububscribeRef = React.useRef();
+  const divRef = useRef(null);
   let { roomId } = useParams();
   let dispatch = useDispatch();
   useEffect(() => {
@@ -32,7 +34,7 @@ function LiveChatCS() {
   });
 
   const sendLiveChatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(roomId, text, csEmail));
+    dispatch(sendMessage(divRef, roomId, text, csEmail));
     resetForm();
     setSubmitting(false);
   };
@@ -51,7 +53,7 @@ function LiveChatCS() {
         <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
           <div className="h-1/6 ">Navbar</div>
           <div className="h-4/6 py-1 px-2">
-            <div className="border-2 h-full rounded-md p-2 flex flex-col">
+            <div className="border-2 h-full rounded-md p-2 flex flex-col overflow-y-scroll">
               {messageList.map((item) => (
                 <LiveChatMessageBubble
                   key={item.id}
@@ -60,6 +62,7 @@ function LiveChatCS() {
                   sender={item.sender}
                 />
               ))}
+              <div className="h-10 my-3" ref={divRef}></div>
             </div>
           </div>
           <div className="h-1/6 my-2">

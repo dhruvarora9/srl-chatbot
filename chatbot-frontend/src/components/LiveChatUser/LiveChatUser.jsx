@@ -5,9 +5,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { checkRoomStatusUser, sendMessage } from "../../actions/livechatAction";
 import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
-
-import { useLocation, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
+import { useRef } from "react";
 
 function LiveChatUser() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
@@ -16,16 +16,21 @@ function LiveChatUser() {
   const roomId = useSelector((state) => state.livechat.roomId);
   const formStatus = useSelector((state) => state.livechat.formStatus);
   const senderEmail = useSelector((state) => state.livechat.senderEmail);
-
   const dispatch = useDispatch();
   const params = useParams();
-  // const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const divRef = useRef(null);
 
   useEffect(() => {
-    if (!formStatus) {
+    let userEmail = sessionStorage.getItem("userEmail");
+    if (!formStatus && senderEmail === "" && userEmail) {
       console.log("use effect called");
       let roomId = params.roomId;
       dispatch(checkRoomStatusUser(roomId));
+    }
+    if (!formStatus && senderEmail === "" && !userEmail) {
+      //Invalid
+      navigate("/livechatform");
     }
   }, []);
 
@@ -37,7 +42,7 @@ function LiveChatUser() {
   });
 
   const sendLivechatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(roomId, text, senderEmail));
+    dispatch(sendMessage(divRef, roomId, text, senderEmail));
     resetForm();
     setSubmitting(false);
   };
@@ -54,7 +59,7 @@ function LiveChatUser() {
           <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
             <div className="h-1/6 ">Navbar</div>
             <div className="h-4/6 py-1 px-2">
-              <div className="border-2 h-full rounded-md p-2 flex flex-col">
+              <div className="border-2 h-full rounded-md p-2 flex flex-col overflow-y-scroll">
                 {messagesList.map((item) => (
                   <LiveChatMessageBubble
                     key={item.id}
@@ -63,6 +68,7 @@ function LiveChatUser() {
                     sender={item.sender}
                   />
                 ))}
+                <div className="h-10 my-3" ref={divRef}></div>
               </div>
             </div>
             <div className="h-1/6 my-2">
