@@ -9,19 +9,18 @@ import {
 import { auth } from "../firebase/app";
 // import API from "../shared/API_EXPLICIT";
 
-export const setCustomUserClain = (uid) => {
-  getAuth()
-    .setCustomUserClaims(uid, { admin: true })
-    .then(() => {
-      console.log("admin priviledge set");
-    });
-};
+// export const setCustomUserClain = (uid) => {
+//   getAuth()
+//     .setCustomUserClaims(uid, { admin: true })
+//     .then(() => {
+//       console.log("admin priviledge set");
+//     });
+// };
 
-export const adminLogin = (email, password, navigate) => (dispatch) => {
+export const adminLogin = (email, password) => (dispatch) => {
   dispatch({
     type: LOGIN_ADMIN,
   });
-
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredentials) => {
       userCredentials.user
@@ -30,10 +29,10 @@ export const adminLogin = (email, password, navigate) => (dispatch) => {
           dispatch({
             type: LOGIN_ADMIN_SUCCESS,
             email: userCredentials.user.email,
-            token: userCredentials.user.email,
+            token: userCredentials.user.token,
             isAdmin: res.claims.admin ? true : false,
           });
-          navigate(-1);
+          // navigate(-1);
         })
         .catch((error) => console.log("Error"));
     })
@@ -58,9 +57,6 @@ export const setLoginStatus = (email, token, isAdmin) => (dispatch) => {
 };
 
 export const logoutAdmin = () => (dispatch) => {
-  localStorage.removeItem("email");
-  localStorage.removeItem("token");
-
   signOut(auth)
     .then(() => {
       dispatch({

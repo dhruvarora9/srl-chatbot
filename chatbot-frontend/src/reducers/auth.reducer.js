@@ -38,7 +38,7 @@ const auth = (state = initialState, action) => {
         error: action.payload,
         token: null,
         email: null,
-        username: null,
+        isAdmin: false,
       };
     case LOGOUT_ADMIN:
       return {
@@ -47,7 +47,7 @@ const auth = (state = initialState, action) => {
         error: null,
         token: null,
         email: null,
-        username: null,
+        isAdmin: false,
       };
     default:
       return state;

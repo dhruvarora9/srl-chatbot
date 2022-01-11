@@ -7,6 +7,7 @@ import RouteMain from "./routes/Routes";
 import "react-toastify/dist/ReactToastify.css";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "./firebase/app";
+import { ADMIN_LOADING } from "./action-types/actionTypes";
 
 function App() {
   const dispatch = useDispatch();
@@ -15,6 +16,9 @@ function App() {
   //   dispatch(checkLoginStatus());
   // });
   useEffect(() => {
+    dispatch({
+      type: ADMIN_LOADING,
+    });
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
         user.getIdTokenResult(true).then((res) => {
@@ -25,14 +29,13 @@ function App() {
               res.claims.admin ? true : false
             )
           );
-
+          setLoading(false);
           console.log(res.claims.admin);
         });
-        // setCustomUserClain(user.uid);
       } else {
         dispatch(logoutAdmin());
+        setLoading(false);
       }
-      setLoading(false);
     });
     return unsubscribe;
   }, []);

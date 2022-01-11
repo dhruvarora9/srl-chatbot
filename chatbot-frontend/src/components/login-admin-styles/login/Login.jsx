@@ -22,12 +22,6 @@ const Login = () => {
   const authError = useSelector((store) => store.auth.error);
   const authToken = useSelector((store) => store.auth.token);
 
-  useEffect(() => {
-    if (authToken) {
-      console.log("use effect login called", authToken);
-    }
-  }, [authToken]);
-
   const validateRequestCallBack = Yup.object().shape({
     email: Yup.string()
       .trim()
@@ -41,7 +35,7 @@ const Login = () => {
       email: values.email,
       password: values.password,
     };
-    dispatch(adminLogin(postdata.email, postdata.password, navigate));
+    dispatch(adminLogin(postdata.email, postdata.password));
     actions.setSubmitting(false);
   };
 
