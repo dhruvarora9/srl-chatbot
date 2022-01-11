@@ -257,6 +257,7 @@ export const establishMessageConnectionCS = (roomId) => (dispatch) => {
 export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
   set(ref(db, "roomInfo/" + roomId), {
     userName: name,
+    // userMobile_no: mobile_no,
     userEmail: email,
     expired: false,
   }).then((response) => {
