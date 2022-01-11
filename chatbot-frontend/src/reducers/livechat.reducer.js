@@ -2,6 +2,9 @@ import {
   CHECK_ROOM_STATUS_CS,
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
+  SEND_MESSAGE,
+  SEND_MESSAGE_FAILED,
+  SEND_MESSAGE_SUCCESS,
   SET_FORM_STATUS,
   SET_SENDER_DETAILS,
 } from "../action-types/actionTypes";
@@ -32,6 +35,25 @@ const livechat = (state = initialState, action) => {
         senderName: action.senderName ? action.senderName : "",
         roomId: action.roomId ? action.roomId : null,
       };
+    case SEND_MESSAGE:
+      return {
+        ...state,
+        messageLoading: true,
+        messageError: null,
+      };
+    case SEND_MESSAGE_SUCCESS:
+      return {
+        ...state,
+        messageLoading: false,
+        messageError: null,
+      };
+    case SEND_MESSAGE_FAILED: {
+      return {
+        ...state,
+        messageLoading: false,
+        messageError: action.payload,
+      };
+    }
 
     case ROOM_VERIFY_SUCCESS:
       return {

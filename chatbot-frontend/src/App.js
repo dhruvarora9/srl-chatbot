@@ -1,12 +1,7 @@
 import { useEffect, useState } from "react";
 import { ToastContainer } from "react-toastify";
 import { useDispatch } from "react-redux";
-import {
-  checkLoginStatus,
-  logoutAdmin,
-  setCustomUserClain,
-  setLoginStatus,
-} from "./actions/authAction";
+import { logoutAdmin, setLoginStatus } from "./actions/authAction";
 import "./App.css";
 import RouteMain from "./routes/Routes";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,9 +17,18 @@ function App() {
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log(user);
+        user.getIdTokenResult(true).then((res) => {
+          dispatch(
+            setLoginStatus(
+              user.email,
+              user.accessToken,
+              res.claims.admin ? true : false
+            )
+          );
+
+          console.log(res.claims.admin);
+        });
         // setCustomUserClain(user.uid);
-        dispatch(setLoginStatus(user.email, user.accessToken, "Admin"));
       } else {
         dispatch(logoutAdmin());
       }

@@ -3,14 +3,13 @@ import React from "react";
 import { Formik, Form as FormikForm } from "formik";
 import { Button, Form } from "react-bootstrap";
 import { useSelector, useDispatch } from "react-redux";
-import { Row, Col } from "react-bootstrap";
 import * as Yup from "yup";
 import { toast } from "react-toastify";
-
 import "../login/login.styles.css";
 import "../styles.css";
 import { adminLogin } from "../../../actions/authAction";
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 const initialValues = {
   email: "",
@@ -21,6 +20,13 @@ const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const authError = useSelector((store) => store.auth.error);
+  const authToken = useSelector((store) => store.auth.token);
+
+  useEffect(() => {
+    if (authToken) {
+      console.log("use effect login called", authToken);
+    }
+  }, [authToken]);
 
   const validateRequestCallBack = Yup.object().shape({
     email: Yup.string()

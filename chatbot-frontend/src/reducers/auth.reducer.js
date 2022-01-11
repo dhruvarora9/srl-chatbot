@@ -11,12 +11,12 @@ const initialState = {
   loading: false,
   email: null,
   token: null,
+  isAdmin: false,
 };
 
 const auth = (state = initialState, action) => {
   switch (action.type) {
     case LOGIN_ADMIN:
-      console.log("login admin reducer called");
       return {
         ...state,
         loading: true,
@@ -29,7 +29,7 @@ const auth = (state = initialState, action) => {
         error: null,
         token: action.token,
         email: action.email,
-        username: action.username,
+        isAdmin: action.isAdmin,
       };
     case LOGIN_ADMIN_FAILED:
       return {

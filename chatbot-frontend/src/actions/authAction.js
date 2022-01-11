@@ -24,15 +24,18 @@ export const adminLogin = (email, password, navigate) => (dispatch) => {
 
   signInWithEmailAndPassword(auth, email, password)
     .then((userCredentials) => {
-      localStorage.setItem("token", userCredentials.user.accessToken);
-      localStorage.setItem("email", userCredentials.user.email);
-      localStorage.setItem("username", "Admin");
-      dispatch({
-        type: LOGIN_ADMIN_SUCCESS,
-        email: userCredentials.user.email,
-        token: userCredentials.user.email,
-        username: "Admin",
-      });
+      userCredentials.user
+        .getIdTokenResult()
+        .then((res) => {
+          dispatch({
+            type: LOGIN_ADMIN_SUCCESS,
+            email: userCredentials.user.email,
+            token: userCredentials.user.email,
+            isAdmin: res.claims.admin ? true : false,
+          });
+          navigate(-1);
+        })
+        .catch((error) => console.log("Error"));
     })
     .catch((error) => {
       let errorMessage =
@@ -45,33 +48,19 @@ export const adminLogin = (email, password, navigate) => (dispatch) => {
     });
 };
 
-export const checkLoginStatus = () => (dispatch) => {
-  let token = localStorage.getItem("token");
-  let username = localStorage.getItem("username");
-  let email = localStorage.getItem("email");
-  if (token) {
-    dispatch({
-      type: LOGIN_ADMIN_SUCCESS,
-      email,
-      username,
-      token,
-    });
-  }
-};
-
-export const setLoginStatus = (email, token, username) => (dispatch) => {
+export const setLoginStatus = (email, token, isAdmin) => (dispatch) => {
   dispatch({
     type: LOGIN_ADMIN_SUCCESS,
     email,
-    username,
     token,
+    isAdmin,
   });
 };
 
 export const logoutAdmin = () => (dispatch) => {
   localStorage.removeItem("email");
   localStorage.removeItem("token");
-  localStorage.removeItem("username");
+
   signOut(auth)
     .then(() => {
       dispatch({

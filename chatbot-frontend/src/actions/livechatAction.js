@@ -14,11 +14,14 @@ import {
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
   SEND_MESSAGE,
+  SEND_MESSAGE_FAILED,
+  SEND_MESSAGE_SUCCESS,
   SET_FORM_STATUS,
   SET_SENDER_DETAILS,
 } from "../action-types/actionTypes";
 import app from "../firebase/app";
 import axios from "../shared/API_EXPLICIT";
+import { stringContainHTMLHandler } from "../shared/Helper";
 const db = getDatabase(app);
 
 export const checkRoomStatusCS =
@@ -174,17 +177,33 @@ export const sendMessage = (divRef, roomId, message, sender) => (dispatch) => {
   });
   const infoListRef = ref(db, "/rooms/" + roomId);
   const newPostRef = push(infoListRef);
-  set(newPostRef, {
-    message: message,
-    sender: sender,
-  })
-    .then((response) => {
-      console.log("message sent successfully");
-      divRef.current.scrollIntoView({ behavior: "smooth" });
-    })
-    .catch((error) => {
-      console.log("Failed to write data", error);
+  const updatedMessage = stringContainHTMLHandler(message);
+  if (updatedMessage === "") {
+    dispatch({
+      type: SEND_MESSAGE_FAILED,
+      payload: "Please enter a valid query",
     });
+  } else {
+    set(newPostRef, {
+      message: message,
+      sender: sender,
+    })
+      .then((response) => {
+        console.log("message sent successfully");
+        dispatch({
+          type: SEND_MESSAGE_SUCCESS,
+        });
+        divRef.current.scrollIntoView({ behavior: "smooth" });
+      })
+      .catch((error) => {
+        console.log("Failed to write data", error);
+        dispatch({
+          type: SEND_MESSAGE_FAILED,
+          payload:
+            "Failed to send your message.Please try again or check your connection",
+        });
+      });
+  }
 };
 
 export const createNewRoomInRoomsCollection =
