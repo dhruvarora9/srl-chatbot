@@ -13,6 +13,7 @@ import { SET_FORM_STATUS } from "../../action-types/actionTypes";
 
 const initialValues = {
   username: "",
+  user_mobile_no: "",
   useremail: "",
 };
 
@@ -33,22 +34,33 @@ function UserLiveChatForm() {
     setLoading(false);
   }, []);
   const validatefields = Yup.object().shape({
-    username: Yup.string().trim().required("please enter your name"),
+    username: Yup.string()
+      .trim()
+      .min(1, 'Name cannot be less than 1 character long')
+      .max(40, 'Name cannot be more than 40 characters long')
+      .required('Please enter your Name'),
+    user_mobile_no: Yup.string()
+      .min(10, 'Mobile number must have minimum 10 digits')
+      .max(10, 'Mobile number must have maximum 10 digits')
+      .trim()
+      .required('Please enter your Mobile Number')
+      .matches('^[0-9]+$', 'Mobile number should be numbers'),
     useremail: Yup.string()
       .trim()
-      .email("please enter valid useremail id")
-      .required("please fill your useremail id"),
+      .email("Enter valid Email Id")
+      .required("please fill your Email Id"),
   });
 
   const handleSubmitEvent = (values, actions) => {
     let postdata = {
       username: values.username,
+      user_mobile_no: values.user_mobile_no,
       useremail: values.useremail,
     };
     const roomId = uuidv4();
 
     dispatch(
-      createRoomLiveChatUser(postdata.username, postdata.useremail, roomId)
+      createRoomLiveChatUser(postdata.username,  postdata.useremail, roomId)
     );
     dispatch({
       type: SET_FORM_STATUS,
@@ -92,8 +104,8 @@ function UserLiveChatForm() {
                       <Form.Group controlId="username" className="my-4">
                         <Form.Control
                           type="text"
-                          name="username"
-                          placeholder="username *"
+                          name="Enter you name"
+                          placeholder="Enter username *"
                           value={values.username}
                           // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
                           onChange={handleChange}
@@ -103,11 +115,25 @@ function UserLiveChatForm() {
                           <p className="error no-pos"> {errors.username}</p>
                         ) : null}
                       </Form.Group>
+                      <Form.Group controlId="user_mobile_no" className="my-4">
+                        <Form.Control
+                          type="text"
+                          name="user_mobile_no"
+                          placeholder="Enter mobile no *"
+                          value={values.user_mobile_no}
+                          // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
+                          onChange={handleChange}
+                          isInvalid={errors.user_mobile_no && touched.user_mobile_no}
+                        />
+                        {errors.user_mobile_no && touched.user_mobile_no ? (
+                          <p className="error no-pos"> {errors.user_mobile_no}</p>
+                        ) : null}
+                      </Form.Group>
                       <Form.Group controlId="useremail" className="my-4">
                         <Form.Control
                           type="text"
                           name="useremail"
-                          placeholder="userEmail Id *"
+                          placeholder="Enter Email Id *"
                           value={values.useremail}
                           // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
                           onChange={handleChange}
