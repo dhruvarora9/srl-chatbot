@@ -33,7 +33,6 @@ export const checkRoomStatusCS =
         if (snapshot.exists()) {
           let data = snapshot.val();
           if (!data.expired && data.csEmail && data.csEmail !== csEmail) {
-            // already connection is established
             console.log("already connection is established");
             dispatch({
               type: LIVE_CHAT_FAILED,
@@ -44,7 +43,6 @@ export const checkRoomStatusCS =
             data.csEmail &&
             data.csEmail === csEmail
           ) {
-            // cs executive can join again
             console.log("(cs can join again)");
             // Temporary for expiring chat on reload
             // dispatch({
@@ -69,7 +67,6 @@ export const checkRoomStatusCS =
               senderEmail: csEmail,
             });
           } else {
-            // If chat has expired
             console.log("chat has expired");
             dispatch({
               type: LIVE_CHAT_FAILED,
@@ -95,7 +92,6 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
         if (snapshot.exists()) {
           const data = snapshot.val();
           if (!data.expired && data.userEmail === senderEmail && data.csEmail) {
-            //Re-establish the connection
             console.log("reconnect the user");
             dispatch({
               type: SET_SENDER_DETAILS,
@@ -108,7 +104,6 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
             data.userEmail === senderEmail &&
             !data.csEmail
           ) {
-            // Mailing system failed and refresh occured
             dispatch({
               type: LIVE_CHAT_FAILED,
               payload: "There is some issue connection. Please refresh!",
@@ -117,7 +112,6 @@ export const checkRoomStatusUser = (roomId) => (dispatch) => {
             sessionStorage.removeItem("userName");
             dispatch(deleteRoomFromRoomInfo(roomId));
           } else {
-            //Expired is set to true
             console.log("user: link has expired ");
             dispatch({
               type: LIVE_CHAT_FAILED,
@@ -171,7 +165,6 @@ export const registerCSinChat = (roomId, csEmail, userEmail) => (dispatch) => {
 };
 
 export const sendMessage = (divRef, roomId, message, sender) => (dispatch) => {
-  //sending message
   dispatch({
     type: SEND_MESSAGE,
   });
