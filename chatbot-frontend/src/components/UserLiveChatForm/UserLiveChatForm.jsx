@@ -60,7 +60,7 @@ function UserLiveChatForm() {
     const roomId = uuidv4();
 
     dispatch(
-      createRoomLiveChatUser(postdata.username,  postdata.useremail, roomId)
+      createRoomLiveChatUser(postdata.username, postdata.user_mobile_no, postdata.useremail, roomId)
     );
     dispatch({
       type: SET_FORM_STATUS,
@@ -69,6 +69,7 @@ function UserLiveChatForm() {
     sessionStorage.setItem("userEmail", values.useremail);
     navigate(`/livechatuser/${roomId}`);
   };
+
 
   return (
     <>
@@ -100,28 +101,27 @@ function UserLiveChatForm() {
                   touched,
                 }) => {
                   return (
-                    <FormikForm>
+                    <FormikForm >
                       <Form.Group controlId="username" className="my-4">
                         <Form.Control
                           type="text"
-                          name="Enter you name"
-                          placeholder="Enter username *"
+                          name="username"
+                          placeholder="Enter your name *"
                           value={values.username}
-                          // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
+                          // onChange={(e) => handleInputChange(e, setFieldValue)}
                           onChange={handleChange}
                           isInvalid={errors.username && touched.username}
                         />
                         {errors.username && touched.username ? (
                           <p className="error no-pos"> {errors.username}</p>
                         ) : null}
-                      </Form.Group>
+                      </Form.Group> 
                       <Form.Group controlId="user_mobile_no" className="my-4">
                         <Form.Control
                           type="text"
                           name="user_mobile_no"
                           placeholder="Enter mobile no *"
                           value={values.user_mobile_no}
-                          // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
                           onChange={handleChange}
                           isInvalid={errors.user_mobile_no && touched.user_mobile_no}
                         />
@@ -135,7 +135,6 @@ function UserLiveChatForm() {
                           name="useremail"
                           placeholder="Enter Email Id *"
                           value={values.useremail}
-                          // onChange={(e) => handleuserEmailChange(e, setFieldValue)}
                           onChange={handleChange}
                           isInvalid={errors.useremail && touched.useremail}
                         />

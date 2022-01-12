@@ -254,10 +254,10 @@ export const establishMessageConnectionCS = (roomId) => (dispatch) => {
 };
 
 //create room from user side
-export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
+export const createRoomLiveChatUser = (name, mobileNo, email, roomId) => (dispatch) => {
   set(ref(db, "roomInfo/" + roomId), {
     userName: name,
-    // userMobile_no: mobile_no,
+    userMobileNo: mobileNo,
     userEmail: email,
     expired: false,
   }).then((response) => {
@@ -272,6 +272,7 @@ export const createRoomLiveChatUser = (name, email, roomId) => (dispatch) => {
         dispatch({
           type: SET_SENDER_DETAILS,
           senderName: name,
+          senderMobileNo: mobileNo,
           senderEmail: email,
           roomId: roomId,
         });

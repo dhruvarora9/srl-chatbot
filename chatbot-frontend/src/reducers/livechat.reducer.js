@@ -18,6 +18,7 @@ const initialState = {
   error: null,
   senderName: "",
   senderEmail: "",
+  senderMobileNo: "",
   messageError: null,
 };
 
@@ -32,6 +33,7 @@ const livechat = (state = initialState, action) => {
       return {
         ...state,
         senderEmail: action.senderEmail,
+        senderMobileNo : action.senderMobileNo,
         senderName: action.senderName ? action.senderName : "",
         roomId: action.roomId ? action.roomId : null,
       };
