@@ -11,6 +11,8 @@ import {
 } from "firebase/database";
 import { v4 as uuidv4 } from "uuid";
 import {
+  LEAVE_ROOM_CS,
+  LEAVE_ROOM_USER,
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
   SEND_MESSAGE,
@@ -254,46 +256,47 @@ export const establishMessageConnectionCS = (roomId) => (dispatch) => {
 };
 
 //create room from user side
-export const createRoomLiveChatUser = (name, mobileNo, email, roomId) => (dispatch) => {
-  set(ref(db, "roomInfo/" + roomId), {
-    userName: name,
-    userMobileNo: mobileNo,
-    userEmail: email,
-    expired: false,
-  }).then((response) => {
-    console.log("user: room created successfully");
-    axios
-      .post("/mailer", {
-        roomId: roomId,
-        user: name,
-      })
-      .then((resp) => {
-        console.log("sent mail");
-        dispatch({
-          type: SET_SENDER_DETAILS,
-          senderName: name,
-          senderMobileNo: mobileNo,
-          senderEmail: email,
+export const createRoomLiveChatUser =
+  (name, mobileNo, email, roomId) => (dispatch) => {
+    set(ref(db, "roomInfo/" + roomId), {
+      userName: name,
+      userMobileNo: mobileNo,
+      userEmail: email,
+      expired: false,
+    }).then((response) => {
+      console.log("user: room created successfully");
+      axios
+        .post("/mailer", {
           roomId: roomId,
+          user: name,
+        })
+        .then((resp) => {
+          console.log("sent mail");
+          dispatch({
+            type: SET_SENDER_DETAILS,
+            senderName: name,
+            senderMobileNo: mobileNo,
+            senderEmail: email,
+            roomId: roomId,
+          });
+          return dispatch(checkIfCSJoined(roomId));
+        })
+        .catch((error) => {
+          console.log(error);
+          dispatch({
+            type: LIVE_CHAT_FAILED,
+            payload: "There is some issue connection. Please refresh!",
+          });
+          sessionStorage.removeItem("userEmail");
+          sessionStorage.removeItem("userName");
+          dispatch(deleteRoomFromRoomInfo(roomId));
+          dispatch({
+            type: SET_FORM_STATUS,
+            payload: false,
+          });
         });
-        return dispatch(checkIfCSJoined(roomId));
-      })
-      .catch((error) => {
-        console.log(error);
-        dispatch({
-          type: LIVE_CHAT_FAILED,
-          payload: "There is some issue connection. Please refresh!",
-        });
-        sessionStorage.removeItem("userEmail");
-        sessionStorage.removeItem("userName");
-        dispatch(deleteRoomFromRoomInfo(roomId));
-        dispatch({
-          type: SET_FORM_STATUS,
-          payload: false,
-        });
-      });
-  });
-};
+    });
+  };
 
 //Check if Customer support has joined
 export const checkIfCSJoined = (roomId) => (dispatch) => {

@@ -1,5 +1,7 @@
 import {
   CHECK_ROOM_STATUS_CS,
+  LEAVE_ROOM_CS,
+  LEAVE_ROOM_USER,
   LIVE_CHAT_FAILED,
   ROOM_VERIFY_SUCCESS,
   SEND_MESSAGE,
@@ -33,7 +35,7 @@ const livechat = (state = initialState, action) => {
       return {
         ...state,
         senderEmail: action.senderEmail,
-        senderMobileNo : action.senderMobileNo,
+        senderMobileNo: action.senderMobileNo,
         senderName: action.senderName ? action.senderName : "",
         roomId: action.roomId ? action.roomId : null,
       };
@@ -71,6 +73,24 @@ const livechat = (state = initialState, action) => {
         loading: false,
         error: action.payload,
       };
+    case LEAVE_ROOM_USER:
+      return {
+        ...state,
+        roomId: null,
+        error: action.payload,
+        senderName: "",
+        senderEmail: "",
+        senderMobileNo: "",
+      };
+    case LEAVE_ROOM_CS:
+      return {
+        ...state,
+        senderName: "",
+        senderEmail: "",
+        roomId: null,
+        error: action.payload,
+      };
+
     default:
       return state;
   }

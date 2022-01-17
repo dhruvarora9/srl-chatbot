@@ -25,5 +25,7 @@ export const stringContainHTMLHandler = (originalString) => {
   //   sanitize(originalString).replace(/<\/?[a-z][\s\S]*>/i, "")
   // );
   // console.log("tt", sanitize(originalString.replace(/<\/?[a-z][\s\S]*>/i, "")));
-  return sanitize(originalString.replace(/<\/?[a-z][\s\S]*>/i, ""));
+
+  // return sanitize(originalString.replace(/<\/?[a-z][\s\S]*>/i, ""));
+  return originalString;
 };

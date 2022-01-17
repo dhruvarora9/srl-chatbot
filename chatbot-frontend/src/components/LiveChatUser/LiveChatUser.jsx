@@ -2,12 +2,16 @@ import React, { useEffect, useState } from "react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { checkRoomStatusUser, sendMessage } from "../../actions/livechatAction";
 import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
 import { useNavigate, useParams } from "react-router-dom";
 import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
 import { useRef } from "react";
+import {
+  sendMessageUser,
+  checkRoomStatusUser,
+  leaveLiveChatUser,
+} from "../../actions/livechatUserAction";
 
 function LiveChatUser() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
@@ -16,17 +20,19 @@ function LiveChatUser() {
   const roomId = useSelector((state) => state.livechat.roomId);
   const formStatus = useSelector((state) => state.livechat.formStatus);
   const senderEmail = useSelector((state) => state.livechat.senderEmail);
+
   const dispatch = useDispatch();
   const params = useParams();
   const navigate = useNavigate();
   const divRef = useRef(null);
 
   useEffect(() => {
-    let userEmail = sessionStorage.getItem("userEmail");
+    let userEmail = sessionStorage.getItem("senderEmail");
     if (!formStatus && senderEmail === "" && userEmail) {
       console.log("use effect called");
       let roomId = params.roomId;
-      dispatch(checkRoomStatusUser(roomId));
+
+      dispatch(checkRoomStatusUser(roomId, navigate));
     }
     if (!formStatus && senderEmail === "" && !userEmail) {
       //Invalid
@@ -42,7 +48,7 @@ function LiveChatUser() {
   });
 
   const sendLivechatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(divRef, roomId, text, senderEmail));
+    dispatch(sendMessageUser(divRef, roomId, text, senderEmail));
     resetForm();
     setSubmitting(false);
   };
@@ -57,7 +63,20 @@ function LiveChatUser() {
       {!mainLiveChatLoading && !mainLiveChatError && (
         <div className="w-screen h-screen bg-sky-800 pt-20">
           <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
-            <div className="h-1/6 ">Navbar</div>
+            <div className="h-1/6 ">
+              Navbar
+              <button
+                className="bg-cyan-600 rounded-md text-white w-1/5 disabled:bg-cyan-800 disabled:cursor-not-allowed"
+                onClick={() =>
+                  dispatch(
+                    leaveLiveChatUser(messagesList, senderEmail, roomId, null)
+                  )
+                }
+              >
+                Leave Chat
+              </button>
+            </div>
+
             <div className="h-4/6 py-1 px-2">
               <div className="border-2 h-full rounded-md p-2 flex flex-col overflow-y-scroll">
                 {messagesList.map((item) => (

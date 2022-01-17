@@ -7,7 +7,7 @@ import { useDispatch, useSelector } from "react-redux";
 import * as Yup from "yup";
 import { v4 as uuidv4 } from "uuid";
 
-import { createRoomLiveChatUser } from "../../actions/livechatAction";
+import { createRoomLiveChatUser } from "../../actions/livechatUserAction";
 import { useState } from "react";
 import { SET_FORM_STATUS } from "../../action-types/actionTypes";
 
@@ -36,15 +36,15 @@ function UserLiveChatForm() {
   const validatefields = Yup.object().shape({
     username: Yup.string()
       .trim()
-      .min(1, 'Name cannot be less than 1 character long')
-      .max(40, 'Name cannot be more than 40 characters long')
-      .required('Please enter your Name'),
+      .min(1, "Name cannot be less than 1 character long")
+      .max(40, "Name cannot be more than 40 characters long")
+      .required("Please enter your Name"),
     user_mobile_no: Yup.string()
-      .min(10, 'Mobile number must have minimum 10 digits')
-      .max(10, 'Mobile number must have maximum 10 digits')
+      .min(10, "Mobile number must have minimum 10 digits")
+      .max(10, "Mobile number must have maximum 10 digits")
       .trim()
-      .required('Please enter your Mobile Number')
-      .matches('^[0-9]+$', 'Mobile number should be numbers'),
+      .required("Please enter your Mobile Number")
+      .matches("^[0-9]+$", "Mobile number should be numbers"),
     useremail: Yup.string()
       .trim()
       .email("Enter valid Email Id")
@@ -60,16 +60,23 @@ function UserLiveChatForm() {
     const roomId = uuidv4();
 
     dispatch(
-      createRoomLiveChatUser(postdata.username, postdata.user_mobile_no, postdata.useremail, roomId)
+      createRoomLiveChatUser(
+        postdata.username,
+        postdata.user_mobile_no,
+        postdata.useremail,
+        roomId
+      )
     );
     dispatch({
       type: SET_FORM_STATUS,
       payload: true,
     });
-    sessionStorage.setItem("userEmail", values.useremail);
+    sessionStorage.setItem("senderEmail", postdata.useremail);
+    sessionStorage.setItem("roomId", roomId);
+    sessionStorage.setItem("senderName", postdata.useremail);
+    sessionStorage.setItem("senderMobileNo", postdata.user_mobile_no);
     navigate(`/livechatuser/${roomId}`);
   };
-
 
   return (
     <>
@@ -101,7 +108,7 @@ function UserLiveChatForm() {
                   touched,
                 }) => {
                   return (
-                    <FormikForm >
+                    <FormikForm>
                       <Form.Group controlId="username" className="my-4">
                         <Form.Control
                           type="text"
@@ -115,7 +122,7 @@ function UserLiveChatForm() {
                         {errors.username && touched.username ? (
                           <p className="error no-pos"> {errors.username}</p>
                         ) : null}
-                      </Form.Group> 
+                      </Form.Group>
                       <Form.Group controlId="user_mobile_no" className="my-4">
                         <Form.Control
                           type="text"
@@ -123,10 +130,15 @@ function UserLiveChatForm() {
                           placeholder="Enter mobile no *"
                           value={values.user_mobile_no}
                           onChange={handleChange}
-                          isInvalid={errors.user_mobile_no && touched.user_mobile_no}
+                          isInvalid={
+                            errors.user_mobile_no && touched.user_mobile_no
+                          }
                         />
                         {errors.user_mobile_no && touched.user_mobile_no ? (
-                          <p className="error no-pos"> {errors.user_mobile_no}</p>
+                          <p className="error no-pos">
+                            {" "}
+                            {errors.user_mobile_no}
+                          </p>
                         ) : null}
                       </Form.Group>
                       <Form.Group controlId="useremail" className="my-4">

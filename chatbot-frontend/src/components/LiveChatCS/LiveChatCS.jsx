@@ -3,12 +3,16 @@ import React, { useEffect } from "react";
 import { Field, Form, Formik } from "formik";
 import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
-import { useParams } from "react-router-dom";
-import { checkRoomStatusCS, sendMessage } from "../../actions/livechatAction";
+import { useNavigate, useParams } from "react-router-dom";
 import LiveChatExpiry from "../LiveChatExpiry/LiveChatExpiry";
 import Loader from "../Loader/Loader";
 import LiveChatMessageBubble from "../LiveChatMessageBubble/LiveChatMessageBubble";
 import { useRef } from "react";
+import {
+  sendMessageCS,
+  checkRoomStatusCS,
+  leaveLiveChatCS,
+} from "../../actions/livechatCSAction";
 
 function LiveChatCS() {
   const mainLiveChatLoading = useSelector((store) => store.livechat.loading);
@@ -19,11 +23,11 @@ function LiveChatCS() {
   const divRef = useRef(null);
   let { roomId } = useParams();
   let dispatch = useDispatch();
+  let navigate = useNavigate();
   useEffect(() => {
-    dispatch(checkRoomStatusCS(roomId, csEmail, unsububscribeRef));
-    return () => {
-      unsububscribeRef.current?.();
-    };
+    dispatch(checkRoomStatusCS(navigate, roomId, csEmail, unsububscribeRef));
+
+    return () => unsububscribeRef.current?.();
   }, []);
 
   const validateRequestCallBack = Yup.object().shape({
@@ -34,7 +38,7 @@ function LiveChatCS() {
   });
 
   const sendLiveChatHandler = ({ text }, { resetForm, setSubmitting }) => {
-    dispatch(sendMessage(divRef, roomId, text, csEmail));
+    dispatch(sendMessageCS(divRef, roomId, text, csEmail));
     resetForm();
     setSubmitting(false);
   };
@@ -51,7 +55,15 @@ function LiveChatCS() {
     page = (
       <div className="w-screen h-screen bg-sky-800 pt-20">
         <div className="w-10/12 bg-white p-2 mx-auto h-4/5">
-          <div className="h-1/6 ">Navbar</div>
+          <div className="h-1/6 ">
+            Navbar
+            <button
+              className="bg-cyan-600 rounded-md text-white w-1/5 disabled:bg-cyan-800 disabled:cursor-not-allowed"
+              onClick={() => dispatch(leaveLiveChatCS(csEmail, roomId, null))}
+            >
+              Leave chat
+            </button>
+          </div>
           <div className="h-4/6 py-1 px-2">
             <div className="border-2 h-full rounded-md p-2 flex flex-col overflow-y-scroll">
               {messageList.map((item) => (
