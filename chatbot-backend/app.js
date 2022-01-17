@@ -10,6 +10,7 @@ const adminRouter = require("./firebase/addAdminPriviledge");
 app.use("/api/admin/", adminRouter);
 const userList = "sneha.sardar@indusnet.co.in,dhruv.arora@indusnet.co.in";
 
+//request ti cs to join chat
 app.post("/api/mailer", (req, res) => {
   let { roomId, user } = req.body;
   let mailTransporter = nodeMailer.createTransport({
@@ -40,6 +41,65 @@ app.post("/api/mailer", (req, res) => {
       });
     }
   });
+});
+
+//chat disconnected mail to admin and cs
+app.post("/api/mailfordisconnecting", (req, res) => {
+  let adminEmail = "appfirebaseuser@gmail.com"
+  let { roomId, userName, csEmail } = req.body;
+
+  let mailTransporter = nodeMailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  let mailDetails = {
+    from: "appfirebaseuser@gmail.com",
+    to: csEmail,
+    cc : adminEmail,
+    // bcc: "dhruv.arora@indusnet.co.in",
+    subject: "User disconnected the chat",
+    html: `
+    <p >Hi, </p>
+    <p >The user ${userName} has been disconnected the chat </p>
+    <p>http://localhost:3000/livechatcs/${roomId} </p>
+      `
+  };
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      res.status(500).json({
+        message: "Message failed",
+      });
+    } else {
+      res.json({
+        message: "Message sent successfully",
+      });
+    }
+  });
+});
+
+//SEARCH 
+app.post("/api/searchdata", async (req, res, next) =>{
+  let { query }  = req.body;
+  try {
+    const response  = await axios.get(
+      'https://www.googleapis.com/customsearch/v1',
+      {
+        params: {
+          key: process.env.React_App_Google_Search_Api_Key,
+          cx: process.env.React_App_Search_Engine_Id,
+          q: query,
+        },
+      }
+    )
+    res.send(response.data)
+  }
+  catch (err) {
+    next(err)
+  }
 });
 
 app.listen(4000, () => {
