@@ -9,7 +9,7 @@ import { db } from "../../firebase/app";
 function ResponseMultiselectDropdown(props) {
   const [multiOptionData, setMultiOptionData] = useState([]);
   const {
-    values: { multiResponse },
+    values: { multiResponseBubble, choice },
     setFieldValue,
   } = useFormikContext();
 
@@ -24,7 +24,7 @@ function ResponseMultiselectDropdown(props) {
 
   useEffect(() => {
     let check = true;
-    if (multiResponse) {
+    if (choice === "multiresponsebubble") {
       let getMultipleOptionData = async () => {
         const q = query(
           collection(db, "botchat"),

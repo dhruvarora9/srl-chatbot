@@ -29,3 +29,11 @@ export const stringContainHTMLHandler = (originalString) => {
   // return sanitize(originalString.replace(/<\/?[a-z][\s\S]*>/i, ""));
   return originalString;
 };
+
+export const stringEncoderHandler = (originalString) => {
+  return escape(originalString);
+};
+
+export const stringDecoderHandler = (originalString) => {
+  return unescapeEntities(originalString);
+};

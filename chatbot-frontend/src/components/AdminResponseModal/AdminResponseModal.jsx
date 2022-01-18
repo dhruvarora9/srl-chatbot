@@ -5,6 +5,7 @@ import * as Yup from "yup";
 import ResponseMultiselectDropdown from "./ResponseMultiselectDropdown";
 import { useDispatch } from "react-redux";
 import { submitResponseForValidQuestion } from "../../actions/adminAction";
+import MultiResponseAdd from "./MultiResponseAdd";
 
 export default function AdminResponseModal({ show, data, onHide }) {
   // const [multiOptionData, setMultiOptionData] = useState([]);
@@ -12,25 +13,31 @@ export default function AdminResponseModal({ show, data, onHide }) {
 
   const validateRequestCallBack = Yup.object().shape({
     text: Yup.string().trim().required("Please enter valid Question"),
-    response: Yup.string().when("multiResponse", {
-      is: false,
+    choice: Yup.string(),
+    response: Yup.string().when("choice", {
+      is: (choice) => ["singleresponse"].includes(choice),
       then: Yup.string().trim().required("Please enter a valid Response"),
     }),
-    multiResponse: Yup.boolean(),
-    responseList: Yup.array().when("multiResponse", {
-      is: true,
+
+    multiResponseList: Yup.array().when("choice", {
+      is: (choice) => ["multiresponse"].includes(choice),
+      then: Yup.array().min(2, "Select atleast two options"),
+    }),
+    responseList: Yup.array().when("choice", {
+      is: (choice) => ["multiresponsebubble"].includes(choice),
       then: Yup.array().min(2, "Select atleast two options"),
     }),
   });
 
   const handleSubmitEvent = (
-    { text, response, multiResponse, responseList },
+    { text, response, choice, multiResponseList, responseList },
     actions
   ) => {
     let post_data = {
       text,
       response,
-      multiResponse,
+      choice,
+      multiResponseList,
       responseList,
     };
     console.log(post_data);
@@ -39,7 +46,8 @@ export default function AdminResponseModal({ show, data, onHide }) {
         data.firebase_id,
         response,
         responseList,
-        multiResponse
+        multiResponseList,
+        choice
       )
     );
     onHide();
@@ -61,14 +69,15 @@ export default function AdminResponseModal({ show, data, onHide }) {
             X
           </button>
         </div>
-
         <div className="flex-col">
           <Formik
             initialValues={{
               text: "query",
               response: "",
-              multiResponse: false,
+              multiResponseField: "",
+              choice: "singleresponse",
               responseList: [],
+              multiResponseList: [],
             }}
             validationSchema={validateRequestCallBack}
             onSubmit={handleSubmitEvent}
@@ -91,11 +100,58 @@ export default function AdminResponseModal({ show, data, onHide }) {
                 {errors.text && touched.text ? (
                   <div className="text-red-600">{errors.text}</div>
                 ) : null}
-                <label className="w-5/6 md:w-4/6 mx-auto">
-                  <Field type="checkbox" name="multiResponse" className="" />{" "}
-                  Check for multi Response
-                </label>
-                {!values.multiResponse && (
+                <Field name="choice">
+                  {({ field }) => (
+                    <div className="flex justify-between">
+                      <div>
+                        <input
+                          {...field}
+                          id="singleresponse"
+                          value="singleresponse"
+                          checked={field.value === "singleresponse"}
+                          name="singleresponse"
+                          onChange={() =>
+                            setFieldValue("choice", "singleresponse")
+                          }
+                          type="radio"
+                        />
+                        <label htmlFor="singleresponse">Single Response</label>
+                      </div>
+                      <div>
+                        <input
+                          {...field}
+                          id="multiresponse"
+                          value="multiresponse"
+                          checked={field.value === "multiresponse"}
+                          name="multiresponse"
+                          onChange={() =>
+                            setFieldValue("choice", "multiresponse")
+                          }
+                          type="radio"
+                        />
+                        <label htmlFor="multiresponse">Multi Response</label>
+                      </div>{" "}
+                      <div>
+                        <input
+                          {...field}
+                          id="multiresponsebubble"
+                          value="multiresponsebubble"
+                          checked={field.value === "multiresponsebubble"}
+                          name="multiresponsebubble"
+                          onChange={() =>
+                            setFieldValue("choice", "multiresponsebubble")
+                          }
+                          type="radio"
+                        />
+                        <label htmlFor="multiresponsebubble">
+                          Multi Bubble Response
+                        </label>
+                      </div>
+                    </div>
+                  )}
+                </Field>
+
+                {values.choice === "singleresponse" && (
                   <>
                     <Field name="response">
                       {({ field }) => (
@@ -114,7 +170,10 @@ export default function AdminResponseModal({ show, data, onHide }) {
                     ) : null}
                   </>
                 )}
-                {values.multiResponse && (
+                {values.choice === "multiresponse" && (
+                  <MultiResponseAdd name="multiResponseList" />
+                )}
+                {values.choice === "multiresponsebubble" && (
                   <ResponseMultiselectDropdown
                     data={data}
                     name="responseList"

@@ -17,6 +17,8 @@ import { db } from "../firebase/app";
 import {
   removeHTMLHandler,
   stringContainHTMLHandler,
+  stringDecoderHandler,
+  stringEncoderHandler,
   toLowerCaseConverter,
 } from "../shared/Helper";
 
@@ -28,7 +30,7 @@ export const Get_Bot_Message =
     dispatch({
       type: SEND_BOT_MESSAGE,
     });
-    let updatedQues = stringContainHTMLHandler(toLowerCaseConverter(ques));
+    let updatedQues = stringEncoderHandler(toLowerCaseConverter(ques));
     let newMessageList;
     let updatedMessageList = messagesList.map((item) => {
       if (item.id === messageId) {
@@ -39,23 +41,23 @@ export const Get_Bot_Message =
       }
       return item;
     });
-    if (updatedQues.length === 0) {
-      newMessageList = [
-        ...updatedMessageList,
+    // if (updatedQues.length === 0) {
+    //   newMessageList = [
+    //     ...updatedMessageList,
 
-        {
-          id: uuidv4(),
-          message: "Please Enter a valid query",
-        },
-      ];
-      dispatch({
-        type: SEND_BOT_MESSAGE_FAILED,
-        payload: newMessageList,
-        error: "error",
-      });
-      divRef.current.scrollIntoView({ behavior: "smooth" });
-      return;
-    }
+    //     {
+    //       id: uuidv4(),
+    //       message: "Please Enter a valid query",
+    //     },
+    //   ];
+    //   dispatch({
+    //     type: SEND_BOT_MESSAGE_FAILED,
+    //     payload: newMessageList,
+    //     error: "error",
+    //   });
+    //   divRef.current.scrollIntoView({ behavior: "smooth" });
+    //   return;
+    // }
 
     const q = query(
       collection(db, "botchat"),
@@ -77,7 +79,7 @@ export const Get_Bot_Message =
               ...updatedMessageList,
               {
                 id: uuidv4(),
-                message: updatedQues,
+                message: stringDecoderHandler(updatedQues),
                 sender: "user",
               },
               {
@@ -98,9 +100,13 @@ export const Get_Bot_Message =
         // Result found in db
         let messageArray = [];
         querySnapshot.forEach((querySnapshotItem) => {
-          if (Array.isArray(querySnapshotItem.data().response)) {
-            //Result is an array (for multiple response)
-            querySnapshotItem.data().response.forEach((respItem) => {
+          let responseData = querySnapshotItem.data();
+          if (
+            Array.isArray(responseData.response) &&
+            !responseData.multiresponse
+          ) {
+            //Result is an array (for multiple response bubble)
+            responseData.response.forEach((respItem) => {
               messageArray.push({
                 id: uuidv4(),
                 firebase_id: respItem.firebase_id,
@@ -111,7 +117,7 @@ export const Get_Bot_Message =
               ...updatedMessageList,
               {
                 id: uuidv4(),
-                message: updatedQues,
+                message: stringDecoderHandler(updatedQues),
                 sender: "user",
               },
               {
@@ -124,6 +130,28 @@ export const Get_Bot_Message =
                 message: messageArray,
               },
             ];
+          } else if (
+            Array.isArray(responseData.response) &&
+            responseData.multiresponse
+          ) {
+            // result is an array(for multiple response )
+            const selectedMessage =
+              responseData.response[
+                Math.floor(Math.random() * responseData.response.length)
+              ];
+            newMessageList = [
+              ...updatedMessageList,
+              {
+                id: uuidv4(),
+                message: stringDecoderHandler(updatedQues),
+                sender: "user",
+              },
+              {
+                id: uuidv4(),
+                firebase_id: querySnapshotItem.id,
+                message: selectedMessage.response,
+              },
+            ];
           } else {
             // Result is not an array
             if (querySnapshotItem.data().type) {
@@ -132,7 +160,7 @@ export const Get_Bot_Message =
                 ...updatedMessageList,
                 {
                   id: uuidv4(),
-                  message: updatedQues,
+                  message: stringDecoderHandler(updatedQues),
                   sender: "user",
                 },
                 {
@@ -147,7 +175,7 @@ export const Get_Bot_Message =
                 ...updatedMessageList,
                 {
                   id: uuidv4(),
-                  message: updatedQues,
+                  message: stringDecoderHandler(updatedQues),
                   sender: "user",
                 },
                 {
@@ -182,8 +210,8 @@ export const getChatBubbleMessage =
     });
 
     getDoc(doc(db, "botchat", id)).then((doc) => {
-      if (Array.isArray(doc.data().response)) {
-        //Result is an array (for multiple response)
+      if (Array.isArray(doc.data().response) && !doc.data().multiresponse) {
+        //Result is an array (for multiple bubble response)
         let messageArray = [];
         doc.data().response.forEach((respItem) => {
           messageArray.push({
@@ -207,6 +235,29 @@ export const getChatBubbleMessage =
             id: uuidv4(),
             flag: false,
             message: messageArray,
+          },
+        ];
+      } else if (
+        Array.isArray(doc.data().response) &&
+        doc.data().multiresponse
+      ) {
+        //Result is an array (for multiple response)
+        let selectedMessage =
+          doc.data().response[
+            Math.floor(Math.random() * doc.data().response.length)
+          ];
+
+        newMessageList = [
+          ...updatedMessageList,
+          {
+            id: uuidv4(),
+            message: ques,
+            sender: "user",
+          },
+          {
+            id: uuidv4(),
+            firebase_id: selectedMessage.id,
+            message: selectedMessage.response,
           },
         ];
       } else {

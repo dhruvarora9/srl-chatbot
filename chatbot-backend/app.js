@@ -9,7 +9,10 @@ const adminRouter = require("./firebase/addAdminPriviledge");
 
 app.use("/api/admin/", adminRouter);
 const userList = "sneha.sardar@indusnet.co.in,dhruv.arora@indusnet.co.in";
-
+let arr = [
+  { message: "Hi", sender: "user@gmail.com" },
+  { message: "hello", sender: "customersupport1@gmail.com" },
+];
 //request ti cs to join chat
 app.post("/api/mailer", (req, res) => {
   let { roomId, user } = req.body;
@@ -45,7 +48,7 @@ app.post("/api/mailer", (req, res) => {
 
 //chat disconnected mail to admin and cs
 app.post("/api/mailfordisconnecting", (req, res) => {
-  let adminEmail = "appfirebaseuser@gmail.com"
+  let adminEmail = "appfirebaseuser@gmail.com";
   let { roomId, userName, csEmail } = req.body;
 
   let mailTransporter = nodeMailer.createTransport({
@@ -55,18 +58,29 @@ app.post("/api/mailfordisconnecting", (req, res) => {
       pass: process.env.PASSWORD,
     },
   });
+  let content = "";
+  arr.forEach((item) => {
+    content +=
+      "<div><p>Message: " +
+      item.message +
+      "</p><p>Sender: " +
+      item.sender +
+      "</p><span>----------------</span></div>";
+  });
 
   let mailDetails = {
     from: "appfirebaseuser@gmail.com",
     to: csEmail,
-    cc : adminEmail,
+    cc: adminEmail,
     // bcc: "dhruv.arora@indusnet.co.in",
     subject: "User disconnected the chat",
     html: `
     <p >Hi, </p>
     <p >The user ${userName} has been disconnected the chat </p>
-    <p>http://localhost:3000/livechatcs/${roomId} </p>
-      `
+    </br>
+    <h4>Chat History</h4>
+        ${content}
+      `,
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
@@ -81,12 +95,12 @@ app.post("/api/mailfordisconnecting", (req, res) => {
   });
 });
 
-//SEARCH 
-app.post("/api/searchdata", async (req, res, next) =>{
-  let { query }  = req.body;
+//SEARCH
+app.post("/api/searchdata", async (req, res, next) => {
+  let { query } = req.body;
   try {
-    const response  = await axios.get(
-      'https://www.googleapis.com/customsearch/v1',
+    const response = await axios.get(
+      "https://www.googleapis.com/customsearch/v1",
       {
         params: {
           key: process.env.React_App_Google_Search_Api_Key,
@@ -94,11 +108,10 @@ app.post("/api/searchdata", async (req, res, next) =>{
           q: query,
         },
       }
-    )
-    res.send(response.data)
-  }
-  catch (err) {
-    next(err)
+    );
+    res.send(response.data);
+  } catch (err) {
+    next(err);
   }
 });
 

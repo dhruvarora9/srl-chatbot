@@ -2,6 +2,7 @@ import React from "react";
 import { Formik, Field, Form } from "formik";
 
 function AdminViewModal({ show, data, onHide }) {
+  console.log(data.multiresponse);
   return (
     <div className=" absolute  h-screen w-screen inset-0 z-20">
       <div
@@ -38,18 +39,37 @@ function AdminViewModal({ show, data, onHide }) {
                     <Field name="response">
                       {({ field }) => (
                         <div className="mt-3">
-                          <ol className="list-decimal "  {...field} rows="6">
+                          <ol className="list-decimal " {...field} rows="6">
                             {Array.isArray(data.response) &&
+                              !data.multiresponse &&
                               data.response.map((item, ind) => {
                                 return (
-                                  <li className="flex-col text-justify" key={ind}>
+                                  <li
+                                    className="flex-col text-justify"
+                                    key={ind}
+                                  >
                                     {" "}
                                     {item.query}{" "}
                                   </li>
                                 );
                               })}{" "}
+                            {Array.isArray(data.response) &&
+                              data.multiresponse &&
+                              data.response.map((item) => {
+                                return (
+                                  <li
+                                    className="flex-col text-justify"
+                                    key={item.id}
+                                  >
+                                    {" "}
+                                    {item.response}{" "}
+                                  </li>
+                                );
+                              })}{" "}
                             {typeof data.response === "string" && (
-                              <li className="flex-col text-justify">{data.response}</li>
+                              <li className="flex-col text-justify">
+                                {data.response}
+                              </li>
                             )}
                           </ol>
                         </div>

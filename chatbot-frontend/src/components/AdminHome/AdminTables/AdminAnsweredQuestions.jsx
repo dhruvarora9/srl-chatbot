@@ -21,11 +21,12 @@ function AdminAnsweredQuestions() {
   const [showViewModal, setShowViewModal] = useState(false);
   const [viewModalData, setViewModalData] = useState("");
 
-  const showViewModalHandler = (id, query, response) => {
+  const showViewModalHandler = (id, query, response, multiresponse) => {
     setViewModalData({
       id,
       query,
       response,
+      multiresponse,
     });
     setShowViewModal(true);
   };
@@ -65,7 +66,8 @@ function AdminAnsweredQuestions() {
                             showViewModalHandler(
                               data.id,
                               data.query,
-                              data.response
+                              data.response,
+                              data.multiresponse
                             )
                           }
                         >

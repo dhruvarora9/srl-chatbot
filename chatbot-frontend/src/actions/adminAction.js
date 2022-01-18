@@ -132,10 +132,11 @@ export const getAnsweredQuestionList = () => (dispatch) => {
 };
 
 export const submitResponseForValidQuestion =
-  (firebase_id, response, responseList, multiResponse) => (dispatch) => {
+  (firebase_id, response, responseList, multiResponseList, choice) =>
+  (dispatch) => {
     const docRef = doc(db, "botchat", firebase_id);
-    if (multiResponse) {
-      // Multiple Responses
+    if (choice === "multiresponsebubble") {
+      // Multiple Bubble Responses
       let newResponseList = responseList.map((item) => {
         return {
           query: item.text,
@@ -147,6 +148,16 @@ export const submitResponseForValidQuestion =
         await updateDoc(docRef, {
           response: newResponseList,
           type: true,
+        });
+        dispatch(getValidQuestionList());
+      };
+      updateDocHandler();
+    } else if (choice === "multiresponse") {
+      let updateDocHandler = async () => {
+        await updateDoc(docRef, {
+          response: multiResponseList,
+          type: true,
+          multiresponse: true,
         });
         dispatch(getValidQuestionList());
       };
