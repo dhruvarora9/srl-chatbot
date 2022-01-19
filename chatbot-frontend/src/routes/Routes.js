@@ -6,11 +6,16 @@ import LiveChatCS from "../components/LiveChatCS/LiveChatCS";
 import LiveChatUser from "../components/LiveChatUser/LiveChatUser";
 
 import Login from "../components/login-admin-styles/login/Login";
+import Profile from "../components/Profile/Profile";
 import UserLiveChatForm from "../components/UserLiveChatForm/UserLiveChatForm";
+import PrivateAdminRoute from "./PrivateAdminRoute";
 import PrivateRoute from "./PrivateRoute";
 
 const RouteMain = () => {
   const isAuthenticated = useSelector((store) => store.auth.token !== null);
+  const isAdmin = useSelector(
+    (store) => store.auth.isAdmin && store.auth.isAdmin === true
+  );
   return (
     <Routes>
       <Route path="/" element={<Home />} />
@@ -23,10 +28,10 @@ const RouteMain = () => {
         }
       />
       <Route
-        path="/dashboard"
+        path="/profile"
         element={
           <PrivateRoute isAuth={isAuthenticated}>
-            <AdminHome />
+            <Profile />
           </PrivateRoute>
         }
       />
@@ -36,6 +41,14 @@ const RouteMain = () => {
           <PrivateRoute isAuth={isAuthenticated}>
             <LiveChatCS />
           </PrivateRoute>
+        }
+      />
+      <Route
+        path="/dashboard"
+        element={
+          <PrivateAdminRoute isAdmin={isAdmin} isAuth={isAuthenticated}>
+            <AdminHome />
+          </PrivateAdminRoute>
         }
       />
       <Route path="/livechatform" element={<UserLiveChatForm />} />
