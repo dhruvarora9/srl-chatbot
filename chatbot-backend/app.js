@@ -14,6 +14,8 @@ const userList = "sneha.sardar@indusnet.co.in,dhruv.arora@indusnet.co.in";
 let arr = [
   { message: "Hi", sender: "user@gmail.com" },
   { message: "hello", sender: "customersupport1@gmail.com" },
+  { message: "How are you?", sender: "user@gmail.com" },
+  { message: "doing good..!!", sender: "customersupport1@gmail.com" }, 
 ];
 //request ti cs to join chat
 app.post("/api/mailer", (req, res) => {
@@ -51,8 +53,8 @@ app.post("/api/mailer", (req, res) => {
 //chat disconnected mail to admin and cs
 app.post("/api/mailfordisconnecting", (req, res) => {
   let adminEmail = "appfirebaseuser@gmail.com";
-  let { roomId, userName, csEmail } = req.body;
-
+  let {  userName, csEmail } = req.body;
+  
   let mailTransporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -78,11 +80,13 @@ app.post("/api/mailfordisconnecting", (req, res) => {
     subject: "User disconnected the chat",
     html: `
     <p >Hi, </p>
-    <p >The user ${userName} has been disconnected the chat </p>
+    <p >The user ${userName} has been disconnected the chat.</p>
     </br>
-    <h4>Chat History</h4>
+    <h4>Chat History :</h4>
+    <div style="border: 1px solid black; border-radius: 12px; margin: 10px; weight: 300px;  height: 250px; padding: 20px; background-color: white;  overflow: scroll;">
         ${content}
-      `,
+    </div>
+     `,
   };
   mailTransporter.sendMail(mailDetails, function (err, data) {
     if (err) {
