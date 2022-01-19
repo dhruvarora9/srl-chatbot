@@ -4,8 +4,6 @@ import * as Yup from "yup";
 import { useDispatch, useSelector } from "react-redux";
 import { getSearchData } from "../../actions/searchAction";
 import SearchDetails from "./SearchDetails";
-import { useState } from "react";
-import { useEffect } from "react";
 
 const initialValues = {
   value: "",
@@ -16,20 +14,17 @@ function SearchPage() {
   const { searchedReasult } = useSelector((store) => store.searchpage);
   console.log("searchedValue", searchedValue);
   console.log("searchedReasult", searchedReasult);
-  const [inputData, setInputData] = useState('')
   const dispatch = useDispatch();
 
   const validatefieldData = Yup.object().shape({
     value: Yup.string()
       .trim()
       .min(2, "Minimum 2 characters required")
-      .required("Please enter valid Message"),
+      .required("Please enter valid Text"),
   });
 
   const SearchSubmithandler = ({ value }, { setSubmitting }) => {
-    localStorage.setItem("value", value)
     console.log("search value ", value);
-    setInputData(value);
     dispatch(getSearchData(value));
     setSubmitting(false);
   };
@@ -37,18 +32,12 @@ function SearchPage() {
   const handleChange = (e, setFieldValue) => {
     e.preventDefault();
     let { value, name } = e.target;
-    console.log('value', value);
     setFieldValue(name, value);
-  }
-  console.log('inputData',inputData)
+  };
 
   const newInitialValues = Object.assign(initialValues, {
-    value: inputData ? inputData : "",
+    value: searchedValue ? searchedValue : "",
   });
- 
-  useEffect(() => {
-    setInputData(localStorage.getItem("value"))
-  })
 
   return (
     <div className=" box-content h-screen w-800 bg-sky-500 p-4 border-4 items-center ">
@@ -70,14 +59,16 @@ function SearchPage() {
                         type="text"
                         placeholder="write something here..."
                         {...field}
-                        onChange={(e)=> {handleChange(e, setFieldValue)}}
+                        onChange={(e) => {
+                          handleChange(e, setFieldValue);
+                        }}
                       />
-                     )} 
+                    )}
                   </Field>
                   <button
                     className="bg-cyan-600 rounded-md text-white w-1/5 disabled:bg-cyan-800 disabled:cursor-not-allowed"
                     type="submit"
-                    disabled={errors.text && touched.text}
+                    disabled={errors.value && touched.value}
                   >
                     Search
                   </button>

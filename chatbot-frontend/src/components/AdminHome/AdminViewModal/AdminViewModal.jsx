@@ -11,7 +11,7 @@ function AdminViewModal({ show, data, onHide }) {
       ></div>
       <div className="mx-auto p-6 w-3/5 flex flex-col bg-white opacity-100 rounded-md absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
         <div className="flex justify-between">
-          <span className="text-xl font-bold">View Response</span>
+          <span className="text-xl font-bold">Responses</span>
           <button
             onClick={onHide}
             className="rounded-full  bg-red-700 text-white  px-2"
@@ -29,11 +29,11 @@ function AdminViewModal({ show, data, onHide }) {
           >
             {({ isSubmitting, values, errors, touched, setFieldValue }) => (
               <Form className="flex flex-col  p-5 mt-4 space-y-4 text-black bg-white rounded-lg  lg:p-10 lg:space-y-6">
-                <label className="block">
+                {/* <label className="block">
                   <span className="flex text-lg font-medium text-gray-700">
                     Response
                   </span>
-                </label>
+                </label> */}
                 {values.response && (
                   <>
                     <Field name="response">

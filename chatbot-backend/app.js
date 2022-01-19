@@ -100,6 +100,7 @@ app.post("/api/mailfordisconnecting", (req, res) => {
 //SEARCH
 app.post("/api/searchdata", async (req, res, next) => {
   let { query } = req.body;
+  console.log( 'in server', query)
   try {
     const response = await axios
       .get("https://www.googleapis.com/customsearch/v1", {
