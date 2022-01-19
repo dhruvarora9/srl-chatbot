@@ -4,6 +4,7 @@ import auth from "./auth.reducer";
 import quesData from "./quesData.reducer";
 import admin from "./admin.reducer";
 import livechat from "./livechat.reducer";
+import searchpage from "./search.reducer";
 
 const reducers = combineReducers({
   botmessage,
@@ -11,6 +12,7 @@ const reducers = combineReducers({
   quesData,
   admin,
   livechat,
+  searchpage,
 });
 
 export default reducers;
