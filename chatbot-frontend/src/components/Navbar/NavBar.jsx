@@ -13,6 +13,9 @@ export default function NavBar() {
           <span className="navbar-headerText2">Your Virtual Assistant</span>
         </div>
         <div>
+        <button className="bg-sky-300 px-2 py-1 rounded-md text-white font-semibold" onClick={()=>navigate("/searchpage")}>
+            Search
+          </button> {"  "}
           <button className="bg-sky-300 px-2 py-1 rounded-md text-white font-semibold" onClick={()=>navigate("/livechatform")}>
             Live Chat
           </button>

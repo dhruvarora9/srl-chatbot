@@ -3,6 +3,8 @@ var nodeMailer = require("nodemailer");
 const express = require("express");
 let cors = require("cors");
 const app = express();
+const axios = require("axios");
+
 app.use(express.json());
 app.use(cors());
 const adminRouter = require("./firebase/addAdminPriviledge");
@@ -99,21 +101,26 @@ app.post("/api/mailfordisconnecting", (req, res) => {
 app.post("/api/searchdata", async (req, res, next) => {
   let { query } = req.body;
   try {
-    const response = await axios.get(
-      "https://www.googleapis.com/customsearch/v1",
-      {
+    const response = await axios
+      .get("https://www.googleapis.com/customsearch/v1", {
         params: {
           key: process.env.React_App_Google_Search_Api_Key,
           cx: process.env.React_App_Search_Engine_Id,
           q: query,
         },
-      }
-    );
-    res.send(response.data);
+      })
+      .then((response) => {
+        response.data.items.length = 5;
+        res.send(response.data);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   } catch (err) {
     next(err);
   }
 });
+
 
 app.listen(4000, () => {
   console.log("App Server Run");

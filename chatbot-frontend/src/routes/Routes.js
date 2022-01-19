@@ -4,6 +4,8 @@ import AdminHome from "../components/AdminHome/AdminHome";
 import Home from "../components/Home/Home";
 import LiveChatCS from "../components/LiveChatCS/LiveChatCS";
 import LiveChatUser from "../components/LiveChatUser/LiveChatUser";
+import SearchPage from "../components/SearchPage/SearchPage";
+import SearchDetails from "../components/SearchPage/SearchDetails";
 
 import Login from "../components/login-admin-styles/login/Login";
 import UserLiveChatForm from "../components/UserLiveChatForm/UserLiveChatForm";
@@ -40,6 +42,8 @@ const RouteMain = () => {
       />
       <Route path="/livechatform" element={<UserLiveChatForm />} />
       <Route path="/livechatuser/:roomId" element={<LiveChatUser />} />
+      <Route path="/searchpage" element={<SearchPage />} />
+      <Route path="/searchdetails" element={<SearchDetails />} />
     </Routes>
   );
 };
