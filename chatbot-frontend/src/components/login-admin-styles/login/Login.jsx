@@ -8,7 +8,7 @@ import { toast } from "react-toastify";
 import "../login/login.styles.css";
 import "../styles.css";
 import { adminLogin } from "../../../actions/authAction";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useEffect } from "react";
 
 const initialValues = {
@@ -19,6 +19,7 @@ const initialValues = {
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const location = useLocation();
   const authError = useSelector((store) => store.auth.error);
   const authToken = useSelector((store) => store.auth.token);
 
@@ -35,7 +36,7 @@ const Login = () => {
       email: values.email,
       password: values.password,
     };
-    dispatch(adminLogin(postdata.email, postdata.password));
+    dispatch(adminLogin(postdata.email, postdata.password, navigate, location));
     actions.setSubmitting(false);
   };
 

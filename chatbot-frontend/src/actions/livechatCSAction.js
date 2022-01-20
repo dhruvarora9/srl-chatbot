@@ -174,25 +174,37 @@ export const sendMessageCS =
     }
   };
 
-export const leaveLiveChatCS = (email, roomId, divRef) => (dispatch) => {
-  const updates = {};
-  updates["/roomInfo/" + roomId + "/expired"] = true;
-  update(ref(db), updates)
-    .then((response) => {
-      divRef?.current?.();
-      dispatch(
-        sendMessageCS(
-          null,
-          roomId,
-          "The Customer Support has disconnected",
-          email
-        )
-      );
-    })
-    .catch((error) => {
-      console.log("Error setting expired ", error);
-    });
-};
+export const leaveLiveChatCS =
+  (email, roomId, divRef, messages) => (dispatch) => {
+    const updates = {};
+    updates["/roomInfo/" + roomId + "/expired"] = true;
+    update(ref(db), updates)
+      .then((response) => {
+        divRef?.current?.();
+        dispatch(
+          sendMessageCS(
+            null,
+            roomId,
+            "The Customer Support has disconnected",
+            email
+          )
+        );
+        //send mail
+        axios
+          .post("/mailfordisconnecting", {
+            senderEmail: email,
+            messages,
+            sender: "cs",
+          })
+          .then(() => console.log("successfully sent mail for closing room"))
+          .catch((error) =>
+            console.log("Error sending mail for closing room ", error)
+          );
+      })
+      .catch((error) => {
+        console.log("Error setting expired ", error);
+      });
+  };
 
 export const checkRoomInfoStatusCS = (roomId, navigate) => (dispatch) => {
   const dataRef = ref(db, "roomInfo/" + roomId);
@@ -200,6 +212,7 @@ export const checkRoomInfoStatusCS = (roomId, navigate) => (dispatch) => {
     const value = snapshot.val();
     if (value.expired) {
       console.log("expired set to true");
+
       sessionStorage.removeItem("csFlag");
       dispatch({
         type: LEAVE_ROOM_CS,

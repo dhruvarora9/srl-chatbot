@@ -159,13 +159,13 @@ export const sendMailToCSInitial =
           type: LIVE_CHAT_FAILED,
           payload: "There is some issue connection. Please refresh!",
         });
-        sessionStorage.removeItem("userEmail");
-        sessionStorage.removeItem("userName");
-        dispatch(deleteRoomFromRoomInfo(roomId));
-        dispatch({
-          type: SET_FORM_STATUS,
-          payload: false,
-        });
+        // sessionStorage.removeItem("userEmail");
+        // sessionStorage.removeItem("userName");
+        // dispatch(deleteRoomFromRoomInfo(roomId));
+        // dispatch({
+        //   type: SET_FORM_STATUS,
+        //   payload: false,
+        // });
       });
   };
 
@@ -246,7 +246,7 @@ export const sendMessageUser =
   };
 
 export const leaveLiveChatUser =
-  (messages, email, roomId, divRef) => (dispatch) => {
+  (email, roomId, divRef, messages) => (dispatch) => {
     const updates = {};
     updates["/roomInfo/" + roomId + "/expired"] = true;
     update(ref(db), updates)
@@ -255,6 +255,17 @@ export const leaveLiveChatUser =
         dispatch(
           sendMessageUser(null, roomId, "The User has disconnected", email)
         );
+        //send mail
+        axios
+          .post("/mailfordisconnecting", {
+            senderEmail: email,
+            messages,
+            sender: "user",
+          })
+          .then(() => console.log("successfully sent mail for closing room"))
+          .catch((error) =>
+            console.log("Error sending mail for closing room ", error)
+          );
       })
       .catch((error) => {
         console.log("Error setting expired ", error);
@@ -267,6 +278,7 @@ export const checkRoomInfoStatusUser = (roomId, navigate) => (dispatch) => {
     const value = snapshot.val();
     if (value.expired) {
       console.log("expired set to true");
+
       sessionStorage.removeItem("senderEmail");
       sessionStorage.removeItem("senderName");
       sessionStorage.removeItem("senderMobileNo");

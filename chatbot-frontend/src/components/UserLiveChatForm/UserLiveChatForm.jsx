@@ -64,7 +64,8 @@ function UserLiveChatForm() {
         postdata.username,
         postdata.user_mobile_no,
         postdata.useremail,
-        roomId
+        roomId,
+        navigate
       )
     );
     dispatch({

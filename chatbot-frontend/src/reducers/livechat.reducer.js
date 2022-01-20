@@ -34,6 +34,8 @@ const livechat = (state = initialState, action) => {
     case SET_SENDER_DETAILS:
       return {
         ...state,
+        loading: true,
+        error: null,
         senderEmail: action.senderEmail,
         senderMobileNo: action.senderMobileNo,
         senderName: action.senderName ? action.senderName : "",

@@ -69,7 +69,7 @@ function LiveChatUser() {
                 className="bg-cyan-600 rounded-md text-white w-1/5 disabled:bg-cyan-800 disabled:cursor-not-allowed"
                 onClick={() =>
                   dispatch(
-                    leaveLiveChatUser(messagesList, senderEmail, roomId, null)
+                    leaveLiveChatUser(senderEmail, roomId, null, messagesList)
                   )
                 }
               >
