@@ -17,7 +17,8 @@ let arr = [
   { message: "How are you?", sender: "user@gmail.com" },
   { message: "doing good..!!", sender: "customersupport1@gmail.com" }, 
 ];
-//request ti cs to join chat
+
+//REQUEST TO CS TO JOIN CHAT
 app.post("/api/mailer", (req, res) => {
   let { roomId, user } = req.body;
   let mailTransporter = nodeMailer.createTransport({
@@ -50,7 +51,7 @@ app.post("/api/mailer", (req, res) => {
   });
 });
 
-//chat disconnected mail to admin and cs
+//CHAT DISCONNECTED MAIL TO CS & ADMIN
 app.post("/api/mailfordisconnecting", (req, res) => {
   let adminEmail = "appfirebaseuser@gmail.com";
   let {  userName, csEmail } = req.body;
@@ -101,7 +102,100 @@ app.post("/api/mailfordisconnecting", (req, res) => {
   });
 });
 
-//SEARCH
+//DISCONNECTED CHAT BY USER
+app.post("/api/userdisconnected", (req, res) => {
+  let {  userName, userEmail } = req.body;
+  
+  let mailTransporter = nodeMailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+  let content = "";
+  arr.forEach((item) => {
+    content +=
+      "<div><p>Message: " +
+      item.message +
+      "</p><p>Sender: " +
+      item.sender +
+      "</p><span>----------------</span></div>";
+  });
+
+  let mailDetails = {
+    from: "appfirebaseuser@gmail.com",
+    to: userEmail,
+    subject: "Chat disconnected",
+    html: `
+    <p >Hi, </p>
+    <p >${userName}, you have disconnected the chat.</p>
+    </br>
+    <h4>Chat History :</h4>
+    <div style="border: 1px solid black; border-radius: 12px; margin: 10px; height: 250px; padding: 20px; background-color: white;  overflow: auto;">
+        ${content}
+    </div>
+     `,
+  };
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      res.status(500).json({
+        message: "Message failed",
+      });
+    } else {
+      res.json({
+        message: "Message sent successfully",
+      });
+    }
+  });
+});
+
+//CS LEAVE THE CHAT 
+app.post("/api/csleavechat", (req, res) => {
+  let { roomId, userName, csEmail } = req.body;
+  const csList = ["sneha.sardar@indusnet.co.in", "dhruv.arora@indusnet.co.in"];
+  const result =  [];
+  csList.forEach((elmt) => {
+    if(elmt !== csEmail){
+      result.push(elmt);
+    }
+  })
+  // console.log('result',result);
+
+  let mailTransporter = nodeMailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: process.env.EMAIL,
+      pass: process.env.PASSWORD,
+    },
+  });
+
+  let mailDetails = {
+    from: "appfirebaseuser@gmail.com",
+    to: result,
+    cc : "appfirebaseuser@gmail.com",
+    subject: "Request to other cs join the Chat with user",
+    html: `
+    <p >Hi, </p>
+    <p >${csEmail}, has been leave from  the Chat. 
+    ${userName} is waiting for another cs to join. Click here </p>
+    <p > http://localhost:3000/livechatcs/${roomId} </p>
+     `,
+  };
+  mailTransporter.sendMail(mailDetails, function (err, data) {
+    if (err) {
+      res.status(500).json({
+        message: "Message failed",
+      });
+    } else {
+      res.json({
+        message: "Message sent successfully",
+      });
+    }
+  });
+});
+
+//SEARCH ENGINE
 app.post("/api/searchdata", async (req, res, next) => {
   let { query } = req.body;
   console.log( 'in server', query)
