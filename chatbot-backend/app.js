@@ -54,7 +54,7 @@ app.post("/api/mailer", (req, res) => {
 //CHAT DISCONNECTED MAIL TO CS & ADMIN
 app.post("/api/mailfordisconnecting", (req, res) => {
   let adminEmail = "appfirebaseuser@gmail.com";
-  let { messages, roomId, sender, senderEmail } = req.body;
+  let { messages, sender, senderEmail, roomId } = req.body;
   
   let endedPerson ;
   let withPerson ;
@@ -86,7 +86,7 @@ app.post("/api/mailfordisconnecting", (req, res) => {
 
   let mailDetails = {
     from: "appfirebaseuser@gmail.com",
-    to: "sneha.sardar@indusnet.co.in",
+    to: userList,
     cc: adminEmail,
     subject: `room-${roomId} closed`,
     html: `

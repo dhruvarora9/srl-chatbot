@@ -195,6 +195,7 @@ export const leaveLiveChatCS =
             senderEmail: email,
             messages,
             sender: "cs",
+            roomId,
           })
           .then(() => console.log("successfully sent mail for closing room"))
           .catch((error) =>

@@ -12,8 +12,7 @@ const initialValues = {
 function SearchPage() {
   const { searchedValue } = useSelector((store) => store.searchpage);
   const { searchedReasult } = useSelector((store) => store.searchpage);
-  console.log("searchedValue", searchedValue);
-  console.log("searchedReasult", searchedReasult);
+
   const dispatch = useDispatch();
 
   const validatefieldData = Yup.object().shape({
@@ -24,7 +23,6 @@ function SearchPage() {
   });
 
   const SearchSubmithandler = ({ value }, { setSubmitting }) => {
-    console.log("search value ", value);
     dispatch(getSearchData(value));
     setSubmitting(false);
   };

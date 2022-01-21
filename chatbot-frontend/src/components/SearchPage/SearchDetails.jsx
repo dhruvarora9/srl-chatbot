@@ -1,8 +1,6 @@
 import React from "react";
 
 const SearchDetails = ({ searchedReasult }) => {
-  console.log("search details", searchedReasult);
-
   const handleClick = (url) => {
     window.open(url, "_blank");
   };
