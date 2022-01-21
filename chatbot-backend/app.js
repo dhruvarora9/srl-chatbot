@@ -11,12 +11,12 @@ const adminRouter = require("./firebase/addAdminPriviledge");
 
 app.use("/api/admin/", adminRouter);
 const userList = "sneha.sardar@indusnet.co.in,dhruv.arora@indusnet.co.in";
-let arr = [
-  { message: "Hi", sender: "user@gmail.com" },
-  { message: "hello", sender: "customersupport1@gmail.com" },
-  { message: "How are you?", sender: "user@gmail.com" },
-  { message: "doing good..!!", sender: "customersupport1@gmail.com" }, 
-];
+// let arr = [
+//   { message: "Hi", sender: "user@gmail.com" },
+//   { message: "hello", sender: "customersupport1@gmail.com" },
+//   { message: "How are you?", sender: "user@gmail.com" },
+//   { message: "doing good..!!", sender: "customersupport1@gmail.com" }, 
+// ];
 
 //REQUEST TO CS TO JOIN CHAT
 app.post("/api/mailer", (req, res) => {
@@ -54,8 +54,19 @@ app.post("/api/mailer", (req, res) => {
 //CHAT DISCONNECTED MAIL TO CS & ADMIN
 app.post("/api/mailfordisconnecting", (req, res) => {
   let adminEmail = "appfirebaseuser@gmail.com";
-  let {  userName, csEmail } = req.body;
+  let { messages, roomId, sender, senderEmail } = req.body;
   
+  let endedPerson ;
+  let withPerson ;
+  if(sender === "cs"){
+    endedPerson = "customer support";
+    withPerson = "user";
+  }else if (sender === "user"){
+    endedPerson = "user";
+    withPerson = "customer support";
+  }
+  console.log('endedPerson',endedPerson)
+
   let mailTransporter = nodeMailer.createTransport({
     service: "gmail",
     auth: {
@@ -64,7 +75,7 @@ app.post("/api/mailfordisconnecting", (req, res) => {
     },
   });
   let content = "";
-  arr.forEach((item) => {
+  messages.forEach((item) => {
     content +=
       "<div><p>Message: " +
       item.message +
@@ -75,64 +86,14 @@ app.post("/api/mailfordisconnecting", (req, res) => {
 
   let mailDetails = {
     from: "appfirebaseuser@gmail.com",
-    to: csEmail,
+    to: "sneha.sardar@indusnet.co.in",
     cc: adminEmail,
-    // bcc: "dhruv.arora@indusnet.co.in",
-    subject: "User disconnected the chat",
+    subject: `room-${roomId} closed`,
     html: `
     <p >Hi, </p>
-    <p >The user ${userName} has been disconnected the chat.</p>
-    </br>
-    <h4>Chat History :</h4>
-    <div style="border: 1px solid black; border-radius: 12px; margin: 10px; weight: 300px;  height: 250px; padding: 20px; background-color: white;  overflow: scroll;">
-        ${content}
-    </div>
-     `,
-  };
-  mailTransporter.sendMail(mailDetails, function (err, data) {
-    if (err) {
-      res.status(500).json({
-        message: "Message failed",
-      });
-    } else {
-      res.json({
-        message: "Message sent successfully",
-      });
-    }
-  });
-});
-
-//DISCONNECTED CHAT BY USER
-app.post("/api/userdisconnected", (req, res) => {
-  let {  userName, userEmail } = req.body;
-  
-  let mailTransporter = nodeMailer.createTransport({
-    service: "gmail",
-    auth: {
-      user: process.env.EMAIL,
-      pass: process.env.PASSWORD,
-    },
-  });
-  let content = "";
-  arr.forEach((item) => {
-    content +=
-      "<div><p>Message: " +
-      item.message +
-      "</p><p>Sender: " +
-      item.sender +
-      "</p><span>----------------</span></div>";
-  });
-
-  let mailDetails = {
-    from: "appfirebaseuser@gmail.com",
-    to: userEmail,
-    subject: "Chat disconnected",
-    html: `
-    <p >Hi, </p>
-    <p >${userName}, you have disconnected the chat.</p>
-    </br>
-    <h4>Chat History :</h4>
-    <div style="border: 1px solid black; border-radius: 12px; margin: 10px; height: 250px; padding: 20px; background-color: white;  overflow: auto;">
+    <p >The ${endedPerson} - ${senderEmail} has ended the chat with the ${withPerson}. the roomId of 
+    the chat is - ${roomId}. Here is your <b>Chat History :</b> </p>
+    <div style="border: 1px solid black; border-radius: 12px; margin: 10px; weight: 300px;  height: 250px; padding: 20px; background-color: white;  overflow: auto;">
         ${content}
     </div>
      `,
